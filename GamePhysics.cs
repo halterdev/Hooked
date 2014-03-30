@@ -23,6 +23,9 @@ namespace Hooked
 		public const float HookSpeed = 2.5f;
 		public const float WormSpeed = 2.5f;
 
+		public const float HookSurfaceSpeed = 2.5f;
+		public const float PlayerSurfaceSpeed = 2.5f;
+
 		// pixels
 		public const int TopOffset = 25;
 

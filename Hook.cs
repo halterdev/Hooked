@@ -22,6 +22,7 @@ namespace Hooked
 
 		// speed that the hook moves
 		float hookMoveSpeed;
+		float hookSurfaceSpeed;
 
 		Texture2D Texture;
 		Rectangle HitBox;
@@ -38,12 +39,18 @@ namespace Hooked
 
 			// set how fast the hook moves
 			hookMoveSpeed = GamePhysics.HookSpeed;
+			hookSurfaceSpeed = GamePhysics.HookSurfaceSpeed;
 		}
 
 		public void Update(GameTime gameTime)
 		{
 			// hook always moves to left, so decrement xposition
 			Position.X -= hookMoveSpeed;
+		}
+
+		public void Update(bool collided)
+		{
+			Position.Y -= hookSurfaceSpeed;
 		}
 
 		public void Draw(SpriteBatch spriteBatch)

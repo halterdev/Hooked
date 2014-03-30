@@ -75,7 +75,7 @@ namespace Hooked
 		int hookHeight;
 
 		bool doneIncreasingSpawn;
-
+		bool deadFromHook;
 
 		#endregion
 
@@ -146,6 +146,7 @@ namespace Hooked
 			wormSpanTime = GamePhysics.StartWormSpawnRate;
 
 			doneIncreasingSpawn = false;
+			deadFromHook = false;
 			player.Active = true;
 			player.Health = 1;
 			score = 0;
@@ -193,9 +194,16 @@ namespace Hooked
 				State = GameState.Playing;
 			} else if (shouldSwim && State == GameState.Score) {
 				shouldSwim = false;
-				//Reset ();
 			}
-			player.Update (gameTime, shouldSwim, hookHeight + 1, State == GameState.Menu);
+			player.Update (gameTime, shouldSwim, hookHeight + 1, State == GameState.Menu, deadFromHook);
+
+			if (deadFromHook) {
+				foreach (var hook in hooks) {
+					if (hook.Collides(player.Rectangle)) {
+						hook.Update (deadFromHook);
+					}
+				}
+			}
 
 			if (State != GameState.Score) {
 
@@ -381,6 +389,7 @@ namespace Hooked
 			// if collision with any hook, dead
 			foreach (var hook in hooks) {
 				if (hook.Collides (rectangle1)) {
+					deadFromHook = true;
 					gameOver ();
 				}
 			}

@@ -65,38 +65,42 @@ namespace Hooked
 		bool isSwimming = false;
 
 		// update player animation
-		public void Update(GameTime gameTime, bool shouldSwim, float maxHeight, bool autoSwim)
+		public void Update(GameTime gameTime, bool shouldSwim, float maxHeight, bool autoSwim, bool diedFromHook)
 		{
 			jumpTimer += gameTime.ElapsedGameTime.TotalMilliseconds;
 
-			if (Position.X < -Width || Health <= 0 || Energy <= 0) {
-				// player is no longer active
-				Active = false;
-			}
+			if (!diedFromHook) {
+				if (Position.X < -Width || Health <= 0 || Energy <= 0) {
+					// player is no longer active
+					Active = false;
+				}
 
-			if (shouldSwim && !autoSwim) {
-				isSwimming = true;
-				jumpTimer = 0;
-			}
+				if (shouldSwim && !autoSwim) {
+					isSwimming = true;
+					jumpTimer = 0;
+				}
 
-			if (Active && isSwimming) {
-				var sin = Math.Sin (jumpTimer * .5 * Math.PI / GamePhysics.PlayerJumpLength);
-				var height = (int)(GamePhysics.PlayerJumpHeight - GamePhysics.PlayerJumpHeight * sin);
-				Position.Y += height;
-				fallTimer = 0;
+				if (Active && isSwimming) {
+					var sin = Math.Sin (jumpTimer * .5 * Math.PI / GamePhysics.PlayerJumpLength);
+					var height = (int)(GamePhysics.PlayerJumpHeight - GamePhysics.PlayerJumpHeight * sin);
+					Position.Y += height;
+					fallTimer = 0;
+				} else {
+					Position.Y += Convert.ToInt32 (GamePhysics.PlayerFallSpeed * gameTime.ElapsedGameTime.TotalMilliseconds);
+					fallTimer += gameTime.ElapsedGameTime.TotalMilliseconds;
+				}
+				rotation = autoSwim ? 0 : TurnToFace (rotation, Rotation (), TurnSpeed);
+				Position.Y = MathHelper.Clamp (Position.Y, 0, maxHeight - Height);
+
+				if (jumpTimer > GamePhysics.PlayerJumpLength) {
+					isSwimming = false;
+				}
+				if (autoSwim && Position.Y >= StartLocation.Y) {
+					isSwimming = true;
+					jumpTimer = 0;
+				}
 			} else {
-				Position.Y += Convert.ToInt32 (GamePhysics.PlayerFallSpeed * gameTime.ElapsedGameTime.TotalMilliseconds);
-				fallTimer += gameTime.ElapsedGameTime.TotalMilliseconds;
-			}
-			rotation = autoSwim ? 0 : TurnToFace (rotation, Rotation (), TurnSpeed);
-			Position.Y = MathHelper.Clamp (Position.Y, 0, maxHeight - Height);
-
-			if (jumpTimer > GamePhysics.PlayerJumpLength) {
-				isSwimming = false;
-			}
-			if (autoSwim && Position.Y >= StartLocation.Y) {
-				isSwimming = true;
-				jumpTimer = 0;
+				Position.Y -= GamePhysics.PlayerSurfaceSpeed;
 			}
 		}
 
