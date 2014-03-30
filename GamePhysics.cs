@@ -28,6 +28,8 @@ namespace Hooked
 
 		// strings
 		public const string TapToSwimString = "Tap to Start Swimming!";
+		public const string ScoreString = "Score";
+		public const string HighScoreString = "High Score";
 	}
 }
 
