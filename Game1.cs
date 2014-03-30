@@ -193,6 +193,7 @@ namespace Hooked
 				State = GameState.Playing;
 			} else if (shouldSwim && State == GameState.Score) {
 				shouldSwim = false;
+				//Reset ();
 			}
 			player.Update (gameTime, shouldSwim, hookHeight + 1, State == GameState.Menu);
 
@@ -276,7 +277,19 @@ namespace Hooked
 			}
 
 			if (State == GameState.Score) {
-
+				// show current score and high score
+				spriteBatch.DrawString(font, GamePhysics.ScoreString, 
+					new Vector2((this.Window.ClientBounds.Width / 2 - (GamePhysics.ScoreString.Length + 40)), (this.Window.ClientBounds.Height / 2) - 100), Color.White, 0,
+					new Vector2(0,0), 1.8f, SpriteEffects.None, 0);
+				spriteBatch.DrawString (font, score.ToString (),
+					new Vector2 ((this.Window.ClientBounds.Width / 2 - score.ToString ().Length), (this.Window.ClientBounds.Height / 2) - 70), Color.White, 0,
+					new Vector2 (0, 0), 1.8f, SpriteEffects.None, 0);
+				spriteBatch.DrawString (font, GamePhysics.HighScoreString,
+					new Vector2 ((this.Window.ClientBounds.Width / 2 - (GamePhysics.HighScoreString.Length + 80)), (this.Window.ClientBounds.Height / 2) - 30), Color.White, 0,
+					new Vector2 (0, 0), 1.8f, SpriteEffects.None, 0);
+				spriteBatch.DrawString (font, HighScore.Current.ToString (),
+					new Vector2 ((this.Window.ClientBounds.Width / 2 - HighScore.Current.ToString ().Length), (this.Window.ClientBounds.Height / 2)), Color.White, 0,
+					new Vector2 (0, 0), 1.8f, SpriteEffects.None, 0);
 			}
 
 			// draw the player
@@ -397,7 +410,7 @@ namespace Hooked
 					energy = 1.0f;
 				}
 			} else {
-				energy = energy - .0003f;
+				energy = energy - .0004f;
 			}
 
 			if (energy <= 0) {
@@ -419,6 +432,7 @@ namespace Hooked
 			player.Health = 0;
 			player.Active = false;
 			State = GameState.Score;
+			HighScore.Current = score;
 		}
 
 		void UpdateGameOver(GameTime gameTime)
@@ -432,7 +446,6 @@ namespace Hooked
 			gameOverPosition.Y = y;
 			scoreBoardRect.Y = GraphicsDevice.Viewport.Height - y - scoreBoardRect.Height;
 		}
-		//testing testing
 		#endregion
 	}
 }
