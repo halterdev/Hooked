@@ -19,5 +19,7 @@
 	<false/>
 	<key>CFBundleIdentifier</key>
 	<string>com.halterdev.hooked</string>
+	<key>UIStatusBarHidden</key>
+	<true/>
 </dict>
 </plist>

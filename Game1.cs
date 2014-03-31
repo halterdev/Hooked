@@ -74,8 +74,9 @@ namespace Hooked
 		float energy;
 		int hookHeight;
 
-		bool doneIncreasingSpawn;
 		bool deadFromHook;
+		bool deadFromEnergy;
+		bool flippedForEnergyDeath;
 
 		#endregion
 
@@ -145,8 +146,10 @@ namespace Hooked
 			hookSpanTime = GamePhysics.StartHookSpawnRate;
 			wormSpanTime = GamePhysics.StartWormSpawnRate;
 
-			doneIncreasingSpawn = false;
+			flippedForEnergyDeath = false;
 			deadFromHook = false;
+			deadFromEnergy = false;
+
 			player.Active = true;
 			player.Health = 1;
 			score = 0;
@@ -195,16 +198,21 @@ namespace Hooked
 			} else if (shouldSwim && State == GameState.Score) {
 				shouldSwim = false;
 			}
-			player.Update (gameTime, shouldSwim, hookHeight + 1, State == GameState.Menu, deadFromHook);
 
+			// update player
 			if (deadFromHook) {
+				player.Update (true);
 				foreach (var hook in hooks) {
-					if (hook.Collides(player.Rectangle)) {
+					if (hook.Collides (player.Rectangle)) {
 						hook.Update (deadFromHook);
 					}
 				}
+			} else if(deadFromEnergy) {
+				player.Update (true);
+			}else {
+				player.Update (gameTime, shouldSwim, hookHeight + 1, State == GameState.Menu);
 			}
-
+				
 			if (State != GameState.Score) {
 
 			}
@@ -290,18 +298,22 @@ namespace Hooked
 					new Vector2((this.Window.ClientBounds.Width / 2 - (GamePhysics.ScoreString.Length + 40)), (this.Window.ClientBounds.Height / 2) - 100), Color.White, 0,
 					new Vector2(0,0), 1.8f, SpriteEffects.None, 0);
 				spriteBatch.DrawString (font, score.ToString (),
-					new Vector2 ((this.Window.ClientBounds.Width / 2 - score.ToString ().Length), (this.Window.ClientBounds.Height / 2) - 70), Color.White, 0,
+					new Vector2 ((this.Window.ClientBounds.Width / 2 - (score.ToString ().Length + 20)), (this.Window.ClientBounds.Height / 2) - 70), Color.White, 0,
 					new Vector2 (0, 0), 1.8f, SpriteEffects.None, 0);
 				spriteBatch.DrawString (font, GamePhysics.HighScoreString,
 					new Vector2 ((this.Window.ClientBounds.Width / 2 - (GamePhysics.HighScoreString.Length + 80)), (this.Window.ClientBounds.Height / 2) - 30), Color.White, 0,
 					new Vector2 (0, 0), 1.8f, SpriteEffects.None, 0);
 				spriteBatch.DrawString (font, HighScore.Current.ToString (),
-					new Vector2 ((this.Window.ClientBounds.Width / 2 - HighScore.Current.ToString ().Length), (this.Window.ClientBounds.Height / 2)), Color.White, 0,
+					new Vector2 ((this.Window.ClientBounds.Width / 2 - (HighScore.Current.ToString ().Length + 20)), (this.Window.ClientBounds.Height / 2)), Color.White, 0,
 					new Vector2 (0, 0), 1.8f, SpriteEffects.None, 0);
 			}
 
 			// draw the player
-			player.Draw (spriteBatch);
+			if (deadFromEnergy && !flippedForEnergyDeath) {
+				player.Draw (spriteBatch, true);
+			} else {
+				player.Draw (spriteBatch);
+			}
 
 			spriteBatch.End ();
 
@@ -339,8 +351,7 @@ namespace Hooked
 			previousHookSpanTime += gameTime.ElapsedGameTime.TotalMilliseconds;
 			if (previousHookSpanTime > hookSpanTime) {
 				previousHookSpanTime = 0;
-				//hookSpanTime -= 200;
-				//hookSpanTime = Math.Max (hookSpanTime, GamePhysics.MinimumHookSpawnRate);
+
 				// add hook
 				AddHook ();
 			}
@@ -423,6 +434,7 @@ namespace Hooked
 			}
 
 			if (energy <= 0) {
+				deadFromEnergy = true;
 				gameOver ();
 			}
 

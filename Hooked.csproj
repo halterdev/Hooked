@@ -127,6 +127,7 @@
     <BundleResource Include="Content\worm-1.png" />
     <BundleResource Include="Resources\Icon.png" />
     <BundleResource Include="Content\gameFont.xnb" />
+    <BundleResource Include="Content\splash.png" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
