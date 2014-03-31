@@ -104,6 +104,9 @@
     <Reference Include="Lidgren.Network">
       <HintPath>..\..\..\Downloads\MonoGame-3.0.1.0\MonoGame.Framework\bin\iPhoneSimulator\Release\Lidgren.Network.dll</HintPath>
     </Reference>
+    <Reference Include="GoogleAdMobAds">
+      <HintPath>..\Components\googleadmob-6.8.0\lib\ios\GoogleAdMobAds.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Game1.cs" />
@@ -132,5 +135,11 @@
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <Folder Include="Content\" />
+  </ItemGroup>
+  <ItemGroup>
+    <XamarinComponentReference Include="googleadmob">
+      <Version>6.8.0</Version>
+      <Visible>False</Visible>
+    </XamarinComponentReference>
   </ItemGroup>
 </Project>
