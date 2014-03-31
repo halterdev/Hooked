@@ -33,6 +33,9 @@ namespace Hooked
 		public const string TapToSwimString = "Tap to Start Swimming!";
 		public const string ScoreString = "Score";
 		public const string HighScoreString = "High Score";
+
+		// ad stuff
+		public const string AdMobID = "ca-app-pub-6337111060808844/8537149016";
 	}
 }
 
