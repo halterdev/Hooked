@@ -13,6 +13,9 @@ using System.Collections.Generic;
 using System.Linq;
 
 using MonoTouch.UIKit;
+using MonoTouch.Foundation;
+using MonoTouch.iAd;
+
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
@@ -109,6 +112,43 @@ namespace Hooked
 
 			previousTouches = new TouchCollection ();
 			currentTouches = new TouchCollection ();
+
+			// ad stuff
+			UIViewController view = this.Services.GetService (typeof(UIViewController)) as UIViewController;
+			var adView = new ADBannerView ();
+
+			NSMutableSet nsM = new NSMutableSet ();
+			nsM.Add (ADBannerView.SizeIdentifier320x50);
+			adView.RequiredContentSizeIdentifiers = nsM;
+			adView.Hidden = true;
+
+			// delegate for ad is loaded
+			adView.AdLoaded += delegate {
+				adView.Frame = new System.Drawing.RectangleF(0,430, adView.Frame.Width, adView.Frame.Height);
+				adView.Hidden = false;
+			};
+
+			// delegate for failed ad receive
+			adView.FailedToReceiveAd += delegate(object sender, AdErrorEventArgs e) {
+				Console.WriteLine(e.Error);
+				adView.Hidden = true;
+			};
+
+			// delegate for click on ad
+			adView.ActionShouldBegin = delegate(ADBannerView banner, bool willLeaveApp) {
+				// pause game here
+				if(State == GameState.Playing){
+					// pause function
+				}
+				return true;
+			};
+
+			// delegate for ad interaction finished
+			adView.ActionFinished += delegate {
+				// continue game now
+			};
+			view.Add (adView);
+
 			base.Initialize ();
 		}
 
