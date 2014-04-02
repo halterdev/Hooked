@@ -132,6 +132,7 @@
     <BundleResource Include="Resources\Icon.png" />
     <BundleResource Include="Content\gameFont.xnb" />
     <BundleResource Include="Content\splash.png" />
+    <BundleResource Include="Content\waterbackground.jpg" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

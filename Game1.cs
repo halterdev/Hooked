@@ -32,7 +32,8 @@ namespace Hooked
 	{
 		Menu,
 		Playing,
-		Score
+		Score,
+		Paused
 	}
 
 	/// <summary>
@@ -63,6 +64,7 @@ namespace Hooked
 		SpriteFont font;
 		Texture2D playerTexture, hookTexture, wormTexture, energyTexture;
 		Texture2D insideEnergyTexture;
+		Texture2D backgroundTexture;
 
 		List<Hook> hooks = new List<Hook>();
 		List<Worm> worms = new List<Worm>();
@@ -168,12 +170,14 @@ namespace Hooked
 			hookTexture = Content.Load<Texture2D> ("Fishhook");
 			wormTexture = Content.Load<Texture2D> ("worm-1");
 			energyTexture = Content.Load<Texture2D> ("HealthBar-1");
+			backgroundTexture = Content.Load<Texture2D> ("waterbackground");
+
 
 			insideEnergyTexture = new Texture2D (GraphicsDevice, energyTexture.Width, energyTexture.Height, false, SurfaceFormat.Color);
 			Color[] colorData = new Color[energyTexture.Width * energyTexture.Height];
 
 			for (int i = 0; i < energyTexture.Width * energyTexture.Height; i++) {
-				colorData [i] = Color.LightGreen;
+				colorData [i] = Color.GreenYellow;
 			}
 			insideEnergyTexture.SetData<Color> (colorData);
 
@@ -207,7 +211,7 @@ namespace Hooked
 			Color[] colorData = new Color[energyTexture.Width * energyTexture.Height];
 
 			for (int i = 0; i < energyTexture.Width * energyTexture.Height; i++) {
-				colorData [i] = Color.LightGreen;
+				colorData [i] = Color.GreenYellow;
 			}
 			insideEnergyTexture.SetData<Color> (colorData);
 		}
@@ -263,6 +267,7 @@ namespace Hooked
 			}
 
 			if (State == GameState.Playing) {
+				adView.Hidden = true;
 				UpdateHooks (gameTime);
 				UpdateWorms (gameTime);
 				UpdateCollision ();
@@ -301,11 +306,12 @@ namespace Hooked
 		protected override void Draw (GameTime gameTime)
 		{
 			// Clear the backbuffer
-			graphics.GraphicsDevice.Clear (Color.CornflowerBlue);
+			graphics.GraphicsDevice.Clear (Color.Blue);
 
 			spriteBatch.Begin (SpriteSortMode.Deferred, BlendState.AlphaBlend,
 				SamplerState.PointClamp, DepthStencilState.None, RasterizerState.CullNone);
 
+			spriteBatch.Draw (backgroundTexture, new Vector2 (0, 0), Color.White);
 			hooks.ForEach (x => x.Draw (spriteBatch));
 			worms.ForEach (x => x.Draw (spriteBatch));
 
@@ -318,8 +324,16 @@ namespace Hooked
 					colorData [i] = Color.Red;
 				}
 				insideEnergyTexture.SetData<Color> (colorData);
-			}
+			} else {
+				energyColor = Color.Green;
+				Color[] colorData = new Color[energyTexture.Width * energyTexture.Height];
 
+				for (int i = 0; i < energyTexture.Width * energyTexture.Height; i++) {
+					colorData [i] = Color.GreenYellow;
+				}
+				insideEnergyTexture.SetData<Color> (colorData);
+			}
+				
 			spriteBatch.Draw (insideEnergyTexture, new Vector2 (GraphicsDevice.Viewport.Width - (energyTexture.Width - 30), GamePhysics.TopOffset - 10), null, 
 				energyColor, 0, new Vector2 (0, 0), energy, SpriteEffects.None, 0);
 
