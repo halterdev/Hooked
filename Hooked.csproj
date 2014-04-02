@@ -117,6 +117,7 @@
     <Compile Include="Worm.cs" />
     <Compile Include="Player.cs" />
     <Compile Include="HighScore.cs" />
+    <Compile Include="MyAdBannerDelegate.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Info.plist" />
