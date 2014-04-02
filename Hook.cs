@@ -84,7 +84,7 @@ namespace Hooked
 		// hitbox of hook
 		public Rectangle Rectangle
 		{
-			get{ return new Rectangle ((int)Position.X, (int)Position.Y, Width, Height + 30); }
+			get{ return new Rectangle ((int)Position.X, (int)Position.Y, (int)(Width * .65), Height + 30); }
 			//get{return new Rectangle((int)Position.X, (int)Position.Y, (int)(Width * .9), Height);}
 		}
 	}

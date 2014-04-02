@@ -81,6 +81,7 @@ namespace Hooked
 		bool deadFromEnergy;
 		bool flippedForEnergyDeath;
 
+		ADBannerView adView;
 		#endregion
 
 		#region Initialization
@@ -115,7 +116,7 @@ namespace Hooked
 
 			// ad stuff
 			UIViewController view = this.Services.GetService (typeof(UIViewController)) as UIViewController;
-			var adView = new ADBannerView ();
+			adView = new ADBannerView ();
 
 			NSMutableSet nsM = new NSMutableSet ();
 			nsM.Add (ADBannerView.SizeIdentifier320x50);
@@ -147,6 +148,7 @@ namespace Hooked
 			adView.ActionFinished += delegate {
 				// continue game now
 			};
+
 			view.Add (adView);
 
 			base.Initialize ();
@@ -185,6 +187,8 @@ namespace Hooked
 			State = GameState.Menu;
 			hookSpanTime = GamePhysics.StartHookSpawnRate;
 			wormSpanTime = GamePhysics.StartWormSpawnRate;
+
+			adView.Hidden = true;
 
 			flippedForEnergyDeath = false;
 			deadFromHook = false;
@@ -234,6 +238,7 @@ namespace Hooked
 			// update player
 			var shouldSwim = currentTouches.Any () || currentKeyboardState.IsKeyDown (Keys.Space) || currentGamePadState.IsButtonDown (Buttons.A);
 			if (shouldSwim && State == GameState.Menu) {
+				adView.Hidden = true;
 				State = GameState.Playing;
 			} else if (shouldSwim && State == GameState.Score) {
 				shouldSwim = false;
@@ -399,7 +404,7 @@ namespace Hooked
 			var deadHooks = new List<Hook> ();
 			foreach (var hook in hooks) {
 				hook.Update (gameTime);
-				if (hook.Position.X < hook.Width / 2) {
+				if (hook.Position.X < (0 - hook.Position.X)) {
 					deadHooks.Add (hook);
 				}
 			}
@@ -422,7 +427,7 @@ namespace Hooked
 			var deadWorms = new List<Worm> ();
 			foreach (var worm in worms) {
 				worm.Update (gameTime);
-				if (worm.Position.X < worm.Width / 2) {
+				if (worm.Position.X < (0 - worm.Position.X)) {
 					deadWorms.Add (worm);
 				}
 			}
@@ -492,6 +497,7 @@ namespace Hooked
 			gameOverTimer = 0;
 			player.Health = 0;
 			player.Active = false;
+			adView.Hidden = false;
 			State = GameState.Score;
 			HighScore.Current = score;
 		}
