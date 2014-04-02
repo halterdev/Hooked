@@ -118,6 +118,7 @@
     <Compile Include="Player.cs" />
     <Compile Include="HighScore.cs" />
     <Compile Include="MyAdBannerDelegate.cs" />
+    <Compile Include="Coral.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Info.plist" />
@@ -133,6 +134,11 @@
     <BundleResource Include="Content\gameFont.xnb" />
     <BundleResource Include="Content\splash.png" />
     <BundleResource Include="Content\waterbackground.jpg" />
+    <BundleResource Include="Content\Sand.png" />
+    <BundleResource Include="Content\80x80.png" />
+    <BundleResource Include="Content\100x100.png" />
+    <BundleResource Include="Content\Fish85.png" />
+    <BundleResource Include="Content\pinkcoral25x25.png" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

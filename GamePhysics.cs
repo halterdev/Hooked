@@ -15,6 +15,9 @@ namespace Hooked
 		public const double MinimumHookSpawnRate = 2000;
 		public const double MinimumWormSpawnRate = 2000;
 
+		public const int MinimumCoralSpawnRate = 2000;
+		public const int MaximumCoralSpawnRate = 8000;
+
 		// used to gradually make it more difficult
 		public const double StartHookSpawnRate = 4000;
 
@@ -22,6 +25,7 @@ namespace Hooked
 
 		public const float HookSpeed = 2.5f;
 		public const float WormSpeed = 2.5f;
+		public const float CoralSpeed = 1.5f;
 
 		public const float HookSurfaceSpeed = 2.5f;
 		public const float PlayerSurfaceSpeed = 2.5f;

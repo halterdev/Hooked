@@ -1,4 +1,5 @@
-﻿#region File Description
+﻿
+#region File Description
 //-----------------------------------------------------------------------------
 // SharkBaitGame.cs
 //
@@ -62,14 +63,16 @@ namespace Hooked
 		TouchCollection currentTouches;
 
 		SpriteFont font;
-		Texture2D playerTexture, hookTexture, wormTexture, energyTexture;
-		Texture2D insideEnergyTexture;
-		Texture2D backgroundTexture;
+		Texture2D playerTexture, hookTexture, wormTexture, coralTexture;
+		Texture2D insideEnergyTexture, energyTexture;
+		Texture2D backgroundTexture, sandTexture;
 
 		List<Hook> hooks = new List<Hook>();
 		List<Worm> worms = new List<Worm>();
+		List<Coral> corals = new List<Coral>();
 		double hookSpanTime, previousHookSpanTime;
 		double wormSpanTime, previousWormSpanTime;
+		int minimumCoralSpanTime, maxCoralSpanTime, coralSpanTime, previousCoralSpanTime;
 
 		// random number generator
 		Random random = new Random();
@@ -140,15 +143,14 @@ namespace Hooked
 			// delegate for click on ad
 			adView.ActionShouldBegin = delegate(ADBannerView banner, bool willLeaveApp) {
 				// pause game here
-				if(State == GameState.Playing){
-					// pause function
-				}
+				State = GameState.Paused;
 				return true;
 			};
 
 			// delegate for ad interaction finished
 			adView.ActionFinished += delegate {
 				// continue game now
+				State = GameState.Menu;
 			};
 
 			view.Add (adView);
@@ -164,14 +166,15 @@ namespace Hooked
 			// Create a new SpriteBatch, which can be use to draw textures.
 			spriteBatch = new SpriteBatch (graphics.GraphicsDevice);
 
-			playerTexture = Content.Load<Texture2D> ("Fish-1");
+			playerTexture = Content.Load<Texture2D> ("Fish85");
 			player.Initialize (playerTexture, new Vector2 (graphics.GraphicsDevice.Viewport.Width / 5, graphics.GraphicsDevice.Viewport.Height / 2));
 
 			hookTexture = Content.Load<Texture2D> ("Fishhook");
 			wormTexture = Content.Load<Texture2D> ("worm-1");
 			energyTexture = Content.Load<Texture2D> ("HealthBar-1");
 			backgroundTexture = Content.Load<Texture2D> ("waterbackground");
-
+			sandTexture = Content.Load<Texture2D> ("Sand");
+			coralTexture = Content.Load<Texture2D> ("pinkcoral25x25");
 
 			insideEnergyTexture = new Texture2D (GraphicsDevice, energyTexture.Width, energyTexture.Height, false, SurfaceFormat.Color);
 			Color[] colorData = new Color[energyTexture.Width * energyTexture.Height];
@@ -192,6 +195,9 @@ namespace Hooked
 			hookSpanTime = GamePhysics.StartHookSpawnRate;
 			wormSpanTime = GamePhysics.StartWormSpawnRate;
 
+			minimumCoralSpanTime = GamePhysics.MinimumCoralSpawnRate;
+			maxCoralSpanTime = GamePhysics.MaximumCoralSpawnRate;
+
 			adView.Hidden = true;
 
 			flippedForEnergyDeath = false;
@@ -204,6 +210,7 @@ namespace Hooked
 			energy = 1.0f;
 			hooks.Clear ();
 			worms.Clear ();
+			corals.Clear ();
 
 			var playerPosition = new Vector2 (graphics.GraphicsDevice.Viewport.Width / 5, graphics.GraphicsDevice.Viewport.Height / 2);
 			player.Position = playerPosition;
@@ -229,52 +236,55 @@ namespace Hooked
 		{
 			base.Update (gameTime);
 
-			// save previous state of keyboard and gamepad to determine key/button presses
-			previousGamePadState = currentGamePadState;
-			previousKeyboardState = currentKeyboardState;
-			previousTouches = currentTouches;
+			if (!(State == GameState.Paused)) {
+				// save previous state of keyboard and gamepad to determine key/button presses
+				previousGamePadState = currentGamePadState;
+				previousKeyboardState = currentKeyboardState;
+				previousTouches = currentTouches;
 
-			// read current state of keyboard and gamepad and store it
-			currentGamePadState = GamePad.GetState (PlayerIndex.One);
-			currentKeyboardState = Keyboard.GetState ();
-			currentTouches = TouchPanel.GetState ();
+				// read current state of keyboard and gamepad and store it
+				currentGamePadState = GamePad.GetState (PlayerIndex.One);
+				currentKeyboardState = Keyboard.GetState ();
+				currentTouches = TouchPanel.GetState ();
 
-			// update player
-			var shouldSwim = currentTouches.Any () || currentKeyboardState.IsKeyDown (Keys.Space) || currentGamePadState.IsButtonDown (Buttons.A);
-			if (shouldSwim && State == GameState.Menu) {
-				adView.Hidden = true;
-				State = GameState.Playing;
-			} else if (shouldSwim && State == GameState.Score) {
-				shouldSwim = false;
-			}
-
-			// update player
-			if (deadFromHook) {
-				player.Update (true);
-				foreach (var hook in hooks) {
-					if (hook.Collides (player.Rectangle)) {
-						hook.Update (deadFromHook);
-					}
+				// update player
+				var shouldSwim = currentTouches.Any () || currentKeyboardState.IsKeyDown (Keys.Space) || currentGamePadState.IsButtonDown (Buttons.A);
+				if (shouldSwim && State == GameState.Menu) {
+					adView.Hidden = true;
+					State = GameState.Playing;
+				} else if (shouldSwim && State == GameState.Score) {
+					shouldSwim = false;
 				}
-			} else if(deadFromEnergy) {
-				player.Update (true);
-			}else {
-				player.Update (gameTime, shouldSwim, hookHeight + 1, State == GameState.Menu);
-			}
+
+				// update player
+				if (deadFromHook) {
+					player.Update (true);
+					foreach (var hook in hooks) {
+						if (hook.Collides (player.Rectangle)) {
+							hook.Update (deadFromHook);
+						}
+					}
+				} else if (deadFromEnergy) {
+					player.Update (true);
+				} else {
+					player.Update (gameTime, shouldSwim, hookHeight + 1, State == GameState.Menu);
+				}
 				
-			if (State != GameState.Score) {
+				if (State != GameState.Score) {
 
-			}
+				}
 
-			if (State == GameState.Playing) {
-				adView.Hidden = true;
-				UpdateHooks (gameTime);
-				UpdateWorms (gameTime);
-				UpdateCollision ();
-			} else if (State == GameState.Score) {
-				UpdateGameOver (gameTime);
-				if (gameOverAnimationDuration <= gameOverTimer && Toggled ()) {
-					Reset ();
+				if (State == GameState.Playing) {
+					adView.Hidden = true;
+					UpdateHooks (gameTime);
+					UpdateWorms (gameTime);
+					UpdateCorals (gameTime);
+					UpdateCollision ();
+				} else if (State == GameState.Score) {
+					UpdateGameOver (gameTime);
+					if (gameOverAnimationDuration <= gameOverTimer && Toggled ()) {
+						Reset ();
+					}
 				}
 			}
 		}
@@ -312,8 +322,11 @@ namespace Hooked
 				SamplerState.PointClamp, DepthStencilState.None, RasterizerState.CullNone);
 
 			spriteBatch.Draw (backgroundTexture, new Vector2 (0, 0), Color.White);
+			spriteBatch.Draw(sandTexture, new Vector2(0, GraphicsDevice.Viewport.Height - 50), Color.White);
+
 			hooks.ForEach (x => x.Draw (spriteBatch));
 			worms.ForEach (x => x.Draw (spriteBatch));
+			//corals.ForEach (x => x.Draw (spriteBatch));
 
 			Color energyColor = Color.LightGreen;
 			if (energy < .25f) {
@@ -405,6 +418,18 @@ namespace Hooked
 			worms.Add (worm);
 		}
 
+		private void AddCoral()
+		{
+			var yPos = (GraphicsDevice.Viewport.Height - 50) + coralTexture.Height;
+			var xPos = GraphicsDevice.Viewport.Width + coralTexture.Width;
+			var posRect = new Rectangle (xPos, yPos, coralTexture.Width, coralTexture.Height);
+
+			var coral = new Coral ();
+			coral.Initialize (coralTexture, posRect);
+
+			corals.Add (coral);
+		}
+
 		private void UpdateHooks(GameTime gameTime)
 		{
 			previousHookSpanTime += gameTime.ElapsedGameTime.TotalMilliseconds;
@@ -449,6 +474,27 @@ namespace Hooked
 			foreach (var worm in deadWorms) {
 				worms.Remove (worm);
 			}
+		}
+
+		private void UpdateCorals(GameTime gameTime)
+		{
+			// spawn coral
+			previousWormSpanTime += gameTime.ElapsedGameTime.TotalMilliseconds;
+			coralSpanTime = random.Next (minimumCoralSpanTime, maxCoralSpanTime);
+			if (previousWormSpanTime > coralSpanTime) {
+				previousCoralSpanTime = 0;
+				// add coral
+				AddCoral ();
+			}
+
+			var deadCorals = new List<Coral> ();
+			foreach (var coral in corals) {
+				coral.Update (gameTime);
+				if (coral.Position.X < -100) {
+					deadCorals.Add (coral);
+				}
+			}
+
 		}
 
 		public void UpdateCollision()

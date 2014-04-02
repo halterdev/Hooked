@@ -30,7 +30,7 @@ namespace Hooked
 		float Scale = 1f;
 
 		// height we always want player to be
-		const int DesiredHeight = 72;
+		const int DesiredHeight = 85;
 
 		// initialize the player
 		public void Initialize(Texture2D animation, Vector2 position)
@@ -57,7 +57,7 @@ namespace Hooked
 		// hit box around the player
 		public Rectangle Rectangle
 		{
-			get{return new Rectangle((int)Position.X, (int)Position.Y, (int)(Width * .65), Height);}
+			get{return new Rectangle((int)Position.X, (int)Position.Y, (int)(Width * .65), (int)(Height * .9));}
 		}
 
 		double jumpTimer = GamePhysics.PlayerJumpLength;
