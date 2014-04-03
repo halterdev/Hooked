@@ -9,7 +9,7 @@
 		<string>Icon</string>
 	</array>
 	<key>MinimumOSVersion</key>
-	<string>4.2</string>
+	<string>7.0</string>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
@@ -21,5 +21,10 @@
 	<string>com.halterdev.hooked</string>
 	<key>UIStatusBarHidden</key>
 	<true/>
+	<key>UIDeviceFamily</key>
+	<array>
+		<integer>1</integer>
+		<integer>2</integer>
+	</array>
 </dict>
 </plist>

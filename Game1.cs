@@ -37,6 +37,8 @@ namespace Hooked
 		Paused
 	}
 
+	public enum Alignment{Center = 0, Left = 1, Right = 2, Top = 4, Bottom = 8}
+
 	/// <summary>
 	/// Default Project Template
 	/// </summary>
@@ -66,6 +68,9 @@ namespace Hooked
 		Texture2D playerTexture, hookTexture, wormTexture, coralTexture;
 		Texture2D insideEnergyTexture, energyTexture;
 		Texture2D backgroundTexture, sandTexture;
+
+		SoundEffect belchSound, bubbleSound, reelSound, energyDeathSound;
+		bool playSound, hasPlayedSound;
 
 		List<Hook> hooks = new List<Hook>();
 		List<Worm> worms = new List<Worm>();
@@ -115,6 +120,9 @@ namespace Hooked
 			State = GameState.Menu;
 			hookHeight = Math.Min (GraphicsDevice.Viewport.Height, MaxHookheight);
 			player = new Player ();
+
+			playSound = true;
+			hasPlayedSound = false;
 
 			previousTouches = new TouchCollection ();
 			currentTouches = new TouchCollection ();
@@ -176,6 +184,11 @@ namespace Hooked
 			sandTexture = Content.Load<Texture2D> ("Sand");
 			coralTexture = Content.Load<Texture2D> ("pinkcoral25x25");
 
+			belchSound = Content.Load<SoundEffect> ("burp");
+			bubbleSound = Content.Load<SoundEffect> ("bubbles");
+			reelSound = Content.Load<SoundEffect> ("reel");
+			energyDeathSound = Content.Load<SoundEffect> ("energydeath");
+
 			insideEnergyTexture = new Texture2D (GraphicsDevice, energyTexture.Width, energyTexture.Height, false, SurfaceFormat.Color);
 			Color[] colorData = new Color[energyTexture.Width * energyTexture.Height];
 
@@ -203,6 +216,9 @@ namespace Hooked
 			flippedForEnergyDeath = false;
 			deadFromHook = false;
 			deadFromEnergy = false;
+
+			hasPlayedSound = false;
+			playSound = true;
 
 			player.Active = true;
 			player.Health = 1;
@@ -280,6 +296,20 @@ namespace Hooked
 					UpdateWorms (gameTime);
 					UpdateCorals (gameTime);
 					UpdateCollision ();
+
+					if (score == 0 && !hasPlayedSound) {
+						hasPlayedSound = true;
+						bubbleSound.Play ();
+					}
+					else if (score != 0 && score % 3 == 0 && playSound) {
+						playSound = false;
+						bubbleSound.Play ();
+					} else {
+						if (score % 3 != 0) {
+							playSound = true;
+						}
+						bubbleSound.Dispose ();
+					}
 				} else if (State == GameState.Score) {
 					UpdateGameOver (gameTime);
 					if (gameOverAnimationDuration <= gameOverTimer && Toggled ()) {
@@ -315,6 +345,8 @@ namespace Hooked
 		/// <param name="gameTime">Provides a snapshot of timing values.</param>
 		protected override void Draw (GameTime gameTime)
 		{
+			Vector2 textCenter = new Vector2 (GraphicsDevice.Viewport.Width / 2, 50f);
+
 			// Clear the backbuffer
 			graphics.GraphicsDevice.Clear (Color.Blue);
 
@@ -322,7 +354,7 @@ namespace Hooked
 				SamplerState.PointClamp, DepthStencilState.None, RasterizerState.CullNone);
 
 			spriteBatch.Draw (backgroundTexture, new Vector2 (0, 0), Color.White);
-			spriteBatch.Draw(sandTexture, new Vector2(0, GraphicsDevice.Viewport.Height - 50), Color.White);
+			spriteBatch.Draw(sandTexture, new Vector2(0, GraphicsDevice.Viewport.Height - sandTexture.Height), Color.White);
 
 			hooks.ForEach (x => x.Draw (spriteBatch));
 			worms.ForEach (x => x.Draw (spriteBatch));
@@ -347,7 +379,7 @@ namespace Hooked
 				insideEnergyTexture.SetData<Color> (colorData);
 			}
 				
-			spriteBatch.Draw (insideEnergyTexture, new Vector2 (GraphicsDevice.Viewport.Width - (energyTexture.Width - 30), GamePhysics.TopOffset - 10), null, 
+			spriteBatch.Draw (insideEnergyTexture, new Vector2 (GraphicsDevice.Viewport.Width - (energyTexture.Width - 35), GamePhysics.TopOffset - 10), null, 
 				energyColor, 0, new Vector2 (0, 0), energy, SpriteEffects.None, 0);
 
 			if (State == GameState.Menu) {
@@ -355,6 +387,9 @@ namespace Hooked
 				spriteBatch.DrawString (font, GamePhysics.TapToSwimString,
 					new Vector2 ((this.Window.ClientBounds.Width / 2) - GamePhysics.TapToSwimString.Length * 10, GamePhysics.TopOffset + 20), Color.White, 0,
 					new Vector2 (0, 0), 1.8f, SpriteEffects.None, 0);
+//				Vector2 textSize = font.MeasureString(
+//				spriteBatch.DrawString (font, GamePhysics.TapToSwimString, textCenter - (textSize / 2), Color.White, 0, 
+//					new Vector2 (0, 0), 1.8f, SpriteEffects.None, 0);
 			}
 
 			if (State == GameState.Playing) {
@@ -362,21 +397,45 @@ namespace Hooked
 				spriteBatch.DrawString (font, score.ToString (),
 					new Vector2 (this.Window.ClientBounds.Width / 2 - score.ToString ().Length / 2, GamePhysics.TopOffset), Color.White, 0,
 					new Vector2 (0, 0), 3.0f, SpriteEffects.None, 0);
-			}
 
+				// if beginning, show eat worm string
+				if (!(worms.Count > 0 || hooks.Count > 0)) {
+					spriteBatch.DrawString (font, GamePhysics.EatWormsString,
+						new Vector2 (this.Window.ClientBounds.Width / 2 - (GamePhysics.EatWormsString.Length*10), this.Window.ClientBounds.Height / 2),
+						Color.Red, 0, new Vector2 (0, 0), 2.0f, SpriteEffects.None, 0);
+				}
+			}
+				
 			if (State == GameState.Score) {
+				// energy warning if died from energy
+				if (deadFromEnergy) {
+//					spriteBatch.DrawString(font, GamePhysics.EnergyDeathString, 
+//						new Vector2((this.Window.ClientBounds.Width / 2 - (GamePhysics.EnergyDeathString.Length*6)), GamePhysics.TopOffset), Color.Red, 0,
+//						new Vector2(0,0), 2f, SpriteEffects.None, 0);
+				}
+
 				// show current score and high score
 				spriteBatch.DrawString(font, GamePhysics.ScoreString, 
 					new Vector2((this.Window.ClientBounds.Width / 2 - (GamePhysics.ScoreString.Length + 40)), (this.Window.ClientBounds.Height / 2) - 100), Color.White, 0,
 					new Vector2(0,0), 1.8f, SpriteEffects.None, 0);
+
+				int currentScoreOffset, highScoreOffset;
+				currentScoreOffset = highScoreOffset = GamePhysics.SingleDegitScoreOffset;
+				if (score.ToString ().Length > 1) {
+					currentScoreOffset = GamePhysics.DoubleDegitScoreOffset;
+				}
+				if (HighScore.Current.ToString ().Length > 1) {
+					currentScoreOffset = GamePhysics.DoubleDegitScoreOffset;
+				}
+
 				spriteBatch.DrawString (font, score.ToString (),
-					new Vector2 ((this.Window.ClientBounds.Width / 2 - (score.ToString ().Length + 20)), (this.Window.ClientBounds.Height / 2) - 70), Color.White, 0,
+					new Vector2 ((this.Window.ClientBounds.Width / 2 - currentScoreOffset), (this.Window.ClientBounds.Height / 2) - 70), Color.White, 0,
 					new Vector2 (0, 0), 1.8f, SpriteEffects.None, 0);
 				spriteBatch.DrawString (font, GamePhysics.HighScoreString,
 					new Vector2 ((this.Window.ClientBounds.Width / 2 - (GamePhysics.HighScoreString.Length + 80)), (this.Window.ClientBounds.Height / 2) - 30), Color.White, 0,
 					new Vector2 (0, 0), 1.8f, SpriteEffects.None, 0);
 				spriteBatch.DrawString (font, HighScore.Current.ToString (),
-					new Vector2 ((this.Window.ClientBounds.Width / 2 - (HighScore.Current.ToString ().Length + 20)), (this.Window.ClientBounds.Height / 2)), Color.White, 0,
+					new Vector2 ((this.Window.ClientBounds.Width / 2 - highScoreOffset), (this.Window.ClientBounds.Height / 2)), Color.White, 0,
 					new Vector2 (0, 0), 1.8f, SpriteEffects.None, 0);
 			}
 
@@ -506,6 +565,7 @@ namespace Hooked
 			foreach (var hook in hooks) {
 				if (hook.Collides (rectangle1)) {
 					deadFromHook = true;
+					reelSound.Play ();
 					gameOver ();
 				}
 			}
@@ -515,6 +575,7 @@ namespace Hooked
 			var eatenWorms = new List<Worm> ();
 			foreach (var worm in worms) {
 				if (worm.Collides (rectangle1)) {
+					belchSound.Play ();
 					eatenWorms.Add (worm);
 					score++;
 					wormEaten = true;
@@ -540,6 +601,7 @@ namespace Hooked
 
 			if (energy <= 0) {
 				deadFromEnergy = true;
+				energyDeathSound.Play ();
 				gameOver ();
 			}
 

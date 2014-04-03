@@ -20,7 +20,6 @@ namespace Hooked
 
 		// used to gradually make it more difficult
 		public const double StartHookSpawnRate = 4000;
-
 		public const double StartWormSpawnRate = 5000;
 
 		public const float HookSpeed = 2.5f;
@@ -35,8 +34,15 @@ namespace Hooked
 
 		// strings
 		public const string TapToSwimString = "Tap to Start Swimming!";
+		public const string EatWormsString = "Eat Worms to Survive!";
+		public const string EnergyDeathString = "You Ran Out of Energy.";
+		public const string EnergyDeathStringTwo = "Eat More Worms!";
 		public const string ScoreString = "Score";
 		public const string HighScoreString = "High Score";
+
+		// score formatting
+		public const int SingleDegitScoreOffset = 21;
+		public const int DoubleDegitScoreOffset = 20;
 
 		// ad stuff
 		public const string AdMobID = "ca-app-pub-6337111060808844/8537149016";

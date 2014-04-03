@@ -1,0 +1,3 @@
+collision detection w/ hook still needs some work obviously
+
+some visual touch-ups still needed
