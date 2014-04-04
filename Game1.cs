@@ -53,6 +53,9 @@ namespace Hooked
 		// represents the player
 		Player player;
 
+		// represents the floor
+		Floor floor;
+
 		// keyboard states for key presses
 		KeyboardState currentKeyboardState;
 		KeyboardState previousKeyboardState;
@@ -87,9 +90,7 @@ namespace Hooked
 		float energy;
 		int hookHeight;
 
-		bool deadFromHook;
-		bool deadFromEnergy;
-		bool flippedForEnergyDeath;
+		bool deadFromHook, deadFromEnergy, deadFromFloor, flippedForEnergyDeath;
 
 		ADBannerView adView;
 		#endregion
@@ -120,6 +121,7 @@ namespace Hooked
 			State = GameState.Menu;
 			hookHeight = Math.Min (GraphicsDevice.Viewport.Height, MaxHookheight);
 			player = new Player ();
+			floor = new Floor ();
 
 			playSound = true;
 			hasPlayedSound = false;
@@ -132,13 +134,14 @@ namespace Hooked
 			adView = new ADBannerView ();
 
 			NSMutableSet nsM = new NSMutableSet ();
-			nsM.Add (ADBannerView.SizeIdentifier320x50);
+			nsM.Add (ADBannerView.SizeIdentifierPortrait);
 			adView.RequiredContentSizeIdentifiers = nsM;
 			adView.Hidden = true;
 
 			// delegate for ad is loaded
 			adView.AdLoaded += delegate {
-				adView.Frame = new System.Drawing.RectangleF(0,430, adView.Frame.Width, adView.Frame.Height);
+				adView.Frame = new System.Drawing.RectangleF(0, (UIScreen.MainScreen.Bounds.Height - adView.Frame.Height), 
+					adView.Frame.Width, adView.Frame.Height);
 				adView.Hidden = false;
 			};
 
@@ -162,7 +165,6 @@ namespace Hooked
 			};
 
 			view.Add (adView);
-
 			base.Initialize ();
 		}
 
@@ -177,11 +179,14 @@ namespace Hooked
 			playerTexture = Content.Load<Texture2D> ("Fish85");
 			player.Initialize (playerTexture, new Vector2 (graphics.GraphicsDevice.Viewport.Width / 5, graphics.GraphicsDevice.Viewport.Height / 2));
 
+			sandTexture = Content.Load<Texture2D> ("Sand");
+			floor.Initialize (sandTexture, new Rectangle(0, graphics.GraphicsDevice.Viewport.Height - sandTexture.Height, sandTexture.Width, sandTexture.Height));
+
 			hookTexture = Content.Load<Texture2D> ("Fishhook");
 			wormTexture = Content.Load<Texture2D> ("worm-1");
 			energyTexture = Content.Load<Texture2D> ("HealthBar-1");
 			backgroundTexture = Content.Load<Texture2D> ("waterbackground");
-			sandTexture = Content.Load<Texture2D> ("Sand");
+			//sandTexture = Content.Load<Texture2D> ("Sand");
 			coralTexture = Content.Load<Texture2D> ("pinkcoral25x25");
 
 			belchSound = Content.Load<SoundEffect> ("burp");
@@ -282,6 +287,8 @@ namespace Hooked
 					}
 				} else if (deadFromEnergy) {
 					player.Update (true);
+				} else if (deadFromFloor) {
+					player.Update (true);
 				} else {
 					player.Update (gameTime, shouldSwim, hookHeight + 1, State == GameState.Menu);
 				}
@@ -354,7 +361,7 @@ namespace Hooked
 				SamplerState.PointClamp, DepthStencilState.None, RasterizerState.CullNone);
 
 			spriteBatch.Draw (backgroundTexture, new Vector2 (0, 0), Color.White);
-			spriteBatch.Draw(sandTexture, new Vector2(0, GraphicsDevice.Viewport.Height - sandTexture.Height), Color.White);
+			floor.Draw (spriteBatch);
 
 			hooks.ForEach (x => x.Draw (spriteBatch));
 			worms.ForEach (x => x.Draw (spriteBatch));
@@ -442,9 +449,12 @@ namespace Hooked
 			// draw the player
 			if (deadFromEnergy && !flippedForEnergyDeath) {
 				player.Draw (spriteBatch, true);
+			} else if (deadFromFloor) {
+				player.Draw (spriteBatch, GraphicsDevice.Viewport.Height - (adView.Frame.Height + player.Health));
 			} else {
 				player.Draw (spriteBatch);
 			}
+				
 
 			spriteBatch.End ();
 
@@ -560,6 +570,7 @@ namespace Hooked
 		{
 			// determine if two objects are overlapping
 			var rectangle1 = player.Rectangle;
+			var playerYBeforeRect = player.Position.Y;
 
 			// if collision with any hook, dead
 			foreach (var hook in hooks) {
@@ -607,6 +618,12 @@ namespace Hooked
 
 			foreach (var worm in eatenWorms) {
 				worms.Remove (worm);
+			}
+
+			rectangle1.Y = (int)playerYBeforeRect;
+			if (floor.Collides(rectangle1)) {
+				deadFromFloor = true;
+				gameOver ();
 			}
 		}
 

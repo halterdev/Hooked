@@ -56,7 +56,7 @@
     </MtouchI18n>
     <MtouchArch>ARMv7</MtouchArch>
     <BuildIpa>true</BuildIpa>
-    <CodesignProvision>0FA186F3-4EAF-4884-84B1-8C445620C3FC</CodesignProvision>
+    <CodesignProvision>612962EA-1461-4EC4-BEAD-2A4C33CAE1CE</CodesignProvision>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|iPhone' ">
     <DebugType>full</DebugType>
@@ -120,6 +120,7 @@
     <Compile Include="HighScore.cs" />
     <Compile Include="MyAdBannerDelegate.cs" />
     <Compile Include="Coral.cs" />
+    <Compile Include="Floor.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Info.plist" />

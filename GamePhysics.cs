@@ -19,7 +19,7 @@ namespace Hooked
 		public const int MaximumCoralSpawnRate = 8000;
 
 		// used to gradually make it more difficult
-		public const double StartHookSpawnRate = 4000;
+		public const double StartHookSpawnRate = 3500;
 		public const double StartWormSpawnRate = 5000;
 
 		public const float HookSpeed = 2.5f;
