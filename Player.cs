@@ -30,7 +30,7 @@ namespace Hooked
 		float Scale = 1f;
 
 		// height we always want player to be
-		const int DesiredHeight = 85;
+		public int DesiredHeight = 85;
 
 		// initialize the player
 		public void Initialize(Texture2D animation, Vector2 position)

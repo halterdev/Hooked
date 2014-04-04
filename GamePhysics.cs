@@ -7,6 +7,9 @@ namespace Hooked
 {
 	static class GamePhysics
 	{
+		// device constants
+		public const int LargeScreenHeight = 1200;
+
 		public const double PlayerJumpLength = 500;
 		public const double PlayerJumpHeight = -10;
 		public const double PlayerFallSpeed = .6;

@@ -78,8 +78,13 @@
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
     <BuildIpa>true</BuildIpa>
-    <CodesignProvision>0FA186F3-4EAF-4884-84B1-8C445620C3FC</CodesignProvision>
-    <CodesignKey>iPhone Developer: James Halter (V297H2G2L8)</CodesignKey>
+    <CodesignKey>iPhone Distribution: James Halter (F2NVTTUCV9)</CodesignKey>
+    <IpaPackageName>
+    </IpaPackageName>
+    <MtouchI18n>
+    </MtouchI18n>
+    <MtouchArch>ARMv7</MtouchArch>
+    <CodesignProvision>574BDBA1-D677-4F87-9082-0590DE82D92E</CodesignProvision>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'AppStore|iPhone' ">
     <DebugType>full</DebugType>
@@ -135,16 +140,18 @@
     <BundleResource Include="Resources\Icon.png" />
     <BundleResource Include="Content\gameFont.xnb" />
     <BundleResource Include="Content\splash.png" />
-    <BundleResource Include="Content\waterbackground.jpg" />
     <BundleResource Include="Content\Sand.png" />
-    <BundleResource Include="Content\80x80.png" />
-    <BundleResource Include="Content\100x100.png" />
     <BundleResource Include="Content\Fish85.png" />
     <BundleResource Include="Content\pinkcoral25x25.png" />
     <BundleResource Include="Content\burp.wav" />
     <BundleResource Include="Content\bubbles.wav" />
     <BundleResource Include="Content\energydeath.wav" />
     <BundleResource Include="Content\reel.wav" />
+    <BundleResource Include="Content\waterbackground.jpg" />
+    <BundleResource Include="Content\waterbackgroundbig.jpg" />
+    <BundleResource Include="Content\Fish100.png" />
+    <BundleResource Include="Default-568h%402x.png" />
+    <BundleResource Include="Resources\Default-Portrait%402x.png" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

@@ -1,1 +1,1 @@
-added sound, some text
+size issues on large screen

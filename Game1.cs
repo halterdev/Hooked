@@ -176,7 +176,13 @@ namespace Hooked
 			// Create a new SpriteBatch, which can be use to draw textures.
 			spriteBatch = new SpriteBatch (graphics.GraphicsDevice);
 
-			playerTexture = Content.Load<Texture2D> ("Fish85");
+			if (graphics.GraphicsDevice.Viewport.Height > GamePhysics.LargeScreenHeight) {
+				playerTexture = Content.Load<Texture2D> ("Fish100");
+				player.DesiredHeight = 100;
+			} else {
+				playerTexture = Content.Load<Texture2D> ("Fish85");
+				player.DesiredHeight = 85;
+			}
 			player.Initialize (playerTexture, new Vector2 (graphics.GraphicsDevice.Viewport.Width / 5, graphics.GraphicsDevice.Viewport.Height / 2));
 
 			sandTexture = Content.Load<Texture2D> ("Sand");
@@ -185,8 +191,14 @@ namespace Hooked
 			hookTexture = Content.Load<Texture2D> ("Fishhook");
 			wormTexture = Content.Load<Texture2D> ("worm-1");
 			energyTexture = Content.Load<Texture2D> ("HealthBar-1");
-			backgroundTexture = Content.Load<Texture2D> ("waterbackground");
-			//sandTexture = Content.Load<Texture2D> ("Sand");
+
+			if (graphics.GraphicsDevice.Viewport.Height > GamePhysics.LargeScreenHeight) {
+				hookHeight = graphics.GraphicsDevice.Viewport.Height - sandTexture.Height;
+				backgroundTexture = Content.Load<Texture2D> ("waterbackgroundbig");
+			} else {
+				backgroundTexture = Content.Load<Texture2D> ("waterbackground");
+			}
+
 			coralTexture = Content.Load<Texture2D> ("pinkcoral25x25");
 
 			belchSound = Content.Load<SoundEffect> ("burp");
@@ -361,6 +373,7 @@ namespace Hooked
 				SamplerState.PointClamp, DepthStencilState.None, RasterizerState.CullNone);
 
 			spriteBatch.Draw (backgroundTexture, new Vector2 (0, 0), Color.White);
+
 			floor.Draw (spriteBatch);
 
 			hooks.ForEach (x => x.Draw (spriteBatch));
