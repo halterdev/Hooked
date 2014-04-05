@@ -56,7 +56,7 @@
     </MtouchI18n>
     <MtouchArch>ARMv7</MtouchArch>
     <BuildIpa>true</BuildIpa>
-    <CodesignProvision>612962EA-1461-4EC4-BEAD-2A4C33CAE1CE</CodesignProvision>
+    <CodesignProvision>A58B2BE1-4CBD-4A9A-BA9B-E828830D75A5</CodesignProvision>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|iPhone' ">
     <DebugType>full</DebugType>
@@ -133,14 +133,10 @@
   <ItemGroup>
     <BundleResource Include="Default.png" />
     <BundleResource Include="GameThumbnail.png" />
-    <BundleResource Include="Content\Fishhook.png" />
     <BundleResource Include="Content\HealthBar-1.png" />
-    <BundleResource Include="Content\worm-1.png" />
     <BundleResource Include="Resources\Icon.png" />
-    <BundleResource Include="Content\gameFont.xnb" />
     <BundleResource Include="Content\splash.png" />
     <BundleResource Include="Content\Sand.png" />
-    <BundleResource Include="Content\Fish85.png" />
     <BundleResource Include="Content\pinkcoral25x25.png" />
     <BundleResource Include="Content\burp.wav" />
     <BundleResource Include="Content\bubbles.wav" />
@@ -148,9 +144,15 @@
     <BundleResource Include="Content\reel.wav" />
     <BundleResource Include="Content\waterbackground.jpg" />
     <BundleResource Include="Content\waterbackgroundbig.jpg" />
-    <BundleResource Include="Content\Fish100.png" />
     <BundleResource Include="Default-568h%402x.png" />
     <BundleResource Include="Resources\Default-Portrait%402x.png" />
+    <BundleResource Include="Content\FishhookOrig.png" />
+    <BundleResource Include="Content\fishdefault.png" />
+    <BundleResource Include="Content\fishlarge.png" />
+    <BundleResource Include="Content\hookdefault.png" />
+    <BundleResource Include="Content\hooklarge.png" />
+    <BundleResource Include="Content\wormdefault.png" />
+    <BundleResource Include="Content\wormlarge.png" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

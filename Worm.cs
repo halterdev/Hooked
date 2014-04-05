@@ -37,7 +37,11 @@ namespace Hooked
 			Active = true;
 
 			// set speed worm moves
-			wormMoveSpeed = GamePhysics.WormSpeed;
+			if (GamePhysics.IsLargeScreen) {
+				wormMoveSpeed = GamePhysics.WormSpeedLargeScreen;
+			} else {
+				wormMoveSpeed = GamePhysics.WormSpeed;
+			}
 		}
 
 		public void Update(GameTime gameTime)
@@ -61,7 +65,8 @@ namespace Hooked
 		// hitbox of worm
 		public Rectangle Rectangle
 		{
-			get{return new Rectangle((int)Position.X, (int)Position.Y, (int)(Width * .9), Height);}
+			//get{return new Rectangle((int)Position.X, (int)Position.Y, (int)(Width * .9), Height);}
+			get { return new Rectangle ((int)Position.X, (int)Position.Y, Width, Height); }
 		}
 	}
 }

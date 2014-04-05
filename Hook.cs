@@ -38,7 +38,11 @@ namespace Hooked
 			Active = true;
 
 			// set how fast the hook moves
-			hookMoveSpeed = GamePhysics.HookSpeed;
+			if (GamePhysics.IsLargeScreen) {
+				hookMoveSpeed = GamePhysics.HookSpeedLargeScreen;
+			} else {
+				hookMoveSpeed = GamePhysics.HookSpeed;
+			}
 			hookSurfaceSpeed = GamePhysics.HookSurfaceSpeed;
 		}
 
@@ -84,8 +88,11 @@ namespace Hooked
 		// hitbox of hook
 		public Rectangle Rectangle
 		{
-			get{ return new Rectangle ((int)Position.X, (int)Position.Y, (int)(Width * .5), Height + 30); }
-			//get{return new Rectangle((int)Position.X, (int)Position.Y, (int)(Width * .9), Height);}
+			get{ if (GamePhysics.IsLargeScreen) {
+					return new Rectangle ((int)Position.X + 15, (int)Position.Y + 60, (int)(Width * .7), Height + 60);
+				} else {
+					return new Rectangle ((int)Position.X + 15, (int)Position.Y + 30, (int)(Width * .7), Height + 30);
+				}}
 		}
 	}
 }

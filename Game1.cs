@@ -177,27 +177,34 @@ namespace Hooked
 			spriteBatch = new SpriteBatch (graphics.GraphicsDevice);
 
 			if (graphics.GraphicsDevice.Viewport.Height > GamePhysics.LargeScreenHeight) {
-				playerTexture = Content.Load<Texture2D> ("Fish100");
-				player.DesiredHeight = 100;
+				GamePhysics.IsLargeScreen = true;
+
+				playerTexture = Content.Load<Texture2D> ("fishlarge");
+				player.DesiredHeight = GamePhysics.LargeScreenFishHeight;
+
+				hookTexture = Content.Load<Texture2D> ("hooklarge");
+				wormTexture = Content.Load<Texture2D> ("wormlarge");
+
 			} else {
-				playerTexture = Content.Load<Texture2D> ("Fish85");
-				player.DesiredHeight = 85;
+				playerTexture = Content.Load<Texture2D> ("fishdefault");
+				player.DesiredHeight = GamePhysics.FishHeight;
+
+				hookTexture = Content.Load<Texture2D> ("hookdefault");
+				wormTexture = Content.Load<Texture2D> ("wormdefault");
 			}
 			player.Initialize (playerTexture, new Vector2 (graphics.GraphicsDevice.Viewport.Width / 5, graphics.GraphicsDevice.Viewport.Height / 2));
 
 			sandTexture = Content.Load<Texture2D> ("Sand");
 			floor.Initialize (sandTexture, new Rectangle(0, graphics.GraphicsDevice.Viewport.Height - sandTexture.Height, sandTexture.Width, sandTexture.Height));
 
-			hookTexture = Content.Load<Texture2D> ("Fishhook");
-			wormTexture = Content.Load<Texture2D> ("worm-1");
 			energyTexture = Content.Load<Texture2D> ("HealthBar-1");
 
 			if (graphics.GraphicsDevice.Viewport.Height > GamePhysics.LargeScreenHeight) {
-				hookHeight = graphics.GraphicsDevice.Viewport.Height - sandTexture.Height;
 				backgroundTexture = Content.Load<Texture2D> ("waterbackgroundbig");
 			} else {
 				backgroundTexture = Content.Load<Texture2D> ("waterbackground");
 			}
+			hookHeight = graphics.GraphicsDevice.Viewport.Height - sandTexture.Height;
 
 			coralTexture = Content.Load<Texture2D> ("pinkcoral25x25");
 

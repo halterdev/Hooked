@@ -7,8 +7,12 @@ namespace Hooked
 {
 	static class GamePhysics
 	{
+		public static bool IsLargeScreen = false;
+
 		// device constants
 		public const int LargeScreenHeight = 1200;
+		public const int LargeScreenFishHeight = 100;
+		public const int FishHeight = 50;
 
 		public const double PlayerJumpLength = 500;
 		public const double PlayerJumpHeight = -10;
@@ -25,8 +29,11 @@ namespace Hooked
 		public const double StartHookSpawnRate = 3500;
 		public const double StartWormSpawnRate = 5000;
 
+		// how fast things move to left
 		public const float HookSpeed = 2.5f;
+		public const float HookSpeedLargeScreen = 3.5f;
 		public const float WormSpeed = 2.5f;
+		public const float WormSpeedLargeScreen = 3.5f;
 		public const float CoralSpeed = 1.5f;
 
 		public const float HookSurfaceSpeed = 2.5f;

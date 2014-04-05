@@ -57,7 +57,8 @@ namespace Hooked
 		// hit box around the player
 		public Rectangle Rectangle
 		{
-			get{return new Rectangle((int)Position.X, (int)Position.Y, (int)(Width * .65), (int)(Height * .9));}
+			//get{return new Rectangle((int)Position.X, (int)Position.Y, (int)(Width * .65), (int)(Height * .9));}
+			get { return new Rectangle ((int)Position.X, (int)Position.Y, Width, Height); }
 		}
 
 		double jumpTimer = GamePhysics.PlayerJumpLength;
