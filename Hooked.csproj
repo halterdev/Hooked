@@ -125,6 +125,7 @@
     <Compile Include="HighScore.cs" />
     <Compile Include="Coral.cs" />
     <Compile Include="Floor.cs" />
+    <Compile Include="GameCenterManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Info.plist" />
@@ -153,6 +154,8 @@
     <BundleResource Include="Content\wormdefault.png" />
     <BundleResource Include="Content\wormlarge.png" />
     <BundleResource Include="Content\gameFont.xnb" />
+    <BundleResource Include="Content\gamecenter.png" />
+    <BundleResource Include="Content\gamecenterlarge.png" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
