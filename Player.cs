@@ -136,15 +136,17 @@ namespace Hooked
 		// draw player flipped
 		public void Draw(SpriteBatch spriteBatch, bool flip)
 		{
-			spriteBatch.Draw (Texture, Position + DrawOffset, null, Color.White, rotation, Origin, Scale, SpriteEffects.FlipVertically, 0);
+			if (flip) {
+				spriteBatch.Draw (Texture, Position + DrawOffset, null, Color.White, rotation, Origin, Scale, SpriteEffects.FlipVertically, 0);
+			} else {
+				spriteBatch.Draw (Texture, Position + DrawOffset, null, Color.White, rotation, Origin, Scale, SpriteEffects.None, 0);
+			}
 		}
 
 		// draw above ad, for floor death
 		public void Draw(SpriteBatch spriteBatch, float height)
 		{
-			Vector2 heightVector = new Vector2(0, height);
-			Position = Position + heightVector;
-
+			Position.Y = height;
 			spriteBatch.Draw (Texture, Position + DrawOffset, null, Color.White, 0, Origin, Scale, SpriteEffects.None, 0);
 		}
 

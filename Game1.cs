@@ -91,6 +91,7 @@ namespace Hooked
 		int hookHeight;
 
 		bool deadFromHook, deadFromEnergy, deadFromFloor, flippedForEnergyDeath;
+		bool deadFromFloorDrawn;
 
 		ADBannerView adView;
 		#endregion
@@ -240,6 +241,8 @@ namespace Hooked
 			flippedForEnergyDeath = false;
 			deadFromHook = false;
 			deadFromEnergy = false;
+			deadFromFloor = false;
+			deadFromFloorDrawn = false;
 
 			hasPlayedSound = false;
 			playSound = true;
@@ -309,7 +312,7 @@ namespace Hooked
 				} else if (deadFromFloor) {
 					player.Update (true);
 				} else {
-					player.Update (gameTime, shouldSwim, hookHeight + 1, State == GameState.Menu);
+					player.Update (gameTime, shouldSwim, graphics.GraphicsDevice.Viewport.Height - sandTexture.Height, State == GameState.Menu);
 				}
 				
 				if (State != GameState.Score) {
@@ -470,7 +473,12 @@ namespace Hooked
 			if (deadFromEnergy && !flippedForEnergyDeath) {
 				player.Draw (spriteBatch, true);
 			} else if (deadFromFloor) {
-				player.Draw (spriteBatch, GraphicsDevice.Viewport.Height - (adView.Frame.Height + player.Health));
+				if (!deadFromFloorDrawn) {
+					deadFromFloorDrawn = true;
+					player.Draw (spriteBatch, GraphicsDevice.Viewport.Height - (adView.Frame.Height + player.Height));
+				} else {
+					player.Draw (spriteBatch, false);
+				}
 			} else {
 				player.Draw (spriteBatch);
 			}
@@ -640,8 +648,7 @@ namespace Hooked
 				worms.Remove (worm);
 			}
 
-			rectangle1.Y = (int)playerYBeforeRect;
-			if (floor.Collides(rectangle1)) {
+			if (rectangle1.Y == (graphics.GraphicsDevice.Viewport.Height - (rectangle1.Height + sandTexture.Height))) {
 				deadFromFloor = true;
 				gameOver ();
 			}
