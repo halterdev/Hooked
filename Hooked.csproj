@@ -56,7 +56,7 @@
     </MtouchI18n>
     <MtouchArch>ARMv7</MtouchArch>
     <BuildIpa>true</BuildIpa>
-    <CodesignProvision>A58B2BE1-4CBD-4A9A-BA9B-E828830D75A5</CodesignProvision>
+    <CodesignProvision>026637B2-E2D4-4BB1-8BF6-1A355C6C6147</CodesignProvision>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|iPhone' ">
     <DebugType>full</DebugType>
@@ -156,6 +156,14 @@
     <BundleResource Include="Content\gameFont.xnb" />
     <BundleResource Include="Content\gamecenter.png" />
     <BundleResource Include="Content\gamecenterlarge.png" />
+    <BundleResource Include="Resources\Default%402x.png" />
+    <BundleResource Include="Resources\Default-Portrait.png" />
+    <BundleResource Include="Resources\Icon%402x.png" />
+    <BundleResource Include="Resources\Icon-60%402x.png" />
+    <BundleResource Include="Resources\Icon-72.png" />
+    <BundleResource Include="Resources\Icon-72%402x.png" />
+    <BundleResource Include="Resources\Icon-76.png" />
+    <BundleResource Include="Resources\Icon-76%402x.png" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
