@@ -146,13 +146,13 @@
     <BundleResource Include="Content\waterbackgroundbig.jpg" />
     <BundleResource Include="Default-568h%402x.png" />
     <BundleResource Include="Resources\Default-Portrait%402x.png" />
-    <BundleResource Include="Content\FishhookOrig.png" />
     <BundleResource Include="Content\fishdefault.png" />
     <BundleResource Include="Content\fishlarge.png" />
     <BundleResource Include="Content\hookdefault.png" />
     <BundleResource Include="Content\hooklarge.png" />
     <BundleResource Include="Content\wormdefault.png" />
     <BundleResource Include="Content\wormlarge.png" />
+    <BundleResource Include="Content\gameFont.xnb" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
