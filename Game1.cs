@@ -143,7 +143,6 @@ namespace Hooked
 			adView.AdLoaded += delegate {
 				adView.Frame = new System.Drawing.RectangleF(0, (UIScreen.MainScreen.Bounds.Height - adView.Frame.Height), 
 					adView.Frame.Width, adView.Frame.Height);
-				adView.Hidden = false;
 			};
 
 			// delegate for failed ad receive
@@ -320,7 +319,6 @@ namespace Hooked
 				}
 
 				if (State == GameState.Playing) {
-					adView.Hidden = true;
 					UpdateHooks (gameTime);
 					UpdateWorms (gameTime);
 					UpdateCorals (gameTime);
@@ -339,8 +337,19 @@ namespace Hooked
 						}
 						bubbleSound.Dispose ();
 					}
+
+					// show ad on intervals of 5, for 3 worms
+					if (score == 0) {
+						adView.Hidden = true;
+					} else if (score % 5 == 0) {
+						adView.Hidden = false;
+					} else if (score % 3 == 0) {
+						adView.Hidden = true;
+					}
+
 				} else if (State == GameState.Score) {
 					UpdateGameOver (gameTime);
+					adView.Hidden = false;
 					if (gameOverAnimationDuration <= gameOverTimer && Toggled ()) {
 						Reset ();
 					}
@@ -650,6 +659,7 @@ namespace Hooked
 
 			if (rectangle1.Y == (graphics.GraphicsDevice.Viewport.Height - (rectangle1.Height + sandTexture.Height))) {
 				deadFromFloor = true;
+				energyDeathSound.Play ();
 				gameOver ();
 			}
 		}
