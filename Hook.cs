@@ -89,7 +89,7 @@ namespace Hooked
 		public Rectangle Rectangle
 		{
 			get{ if (GamePhysics.IsLargeScreen) {
-					return new Rectangle ((int)Position.X + 15, (int)Position.Y + 60, (int)(Width * .7), Height + 60);
+					return new Rectangle ((int)Position.X + 15, (int)Position.Y + 80, (int)(Width * .7), Height + 60);
 				} else {
 					return new Rectangle ((int)Position.X + 15, (int)Position.Y + 30, (int)(Width * .7), Height + 30);
 				}}
