@@ -8,15 +8,55 @@ namespace Hooked
 {
 	public class GameCenterManager
 	{
-		NSMutableDictionary earnedAchievementCache;
+		private static GameCenterManager instance = null;
 
 		public GameCenterManager ()
 		{
 		}
 
+		public static GameCenterManager getInstance()
+		{
+			if (instance == null) {
+				instance = new GameCenterManager ();
+			}
+			return instance;
+		}
+
+		public static bool SetAuthenticatingUser()
+		{
+			if (UIDevice.CurrentDevice.CheckSystemVersion (6, 0))
+			{
+				//
+				// iOS 6.0 and newer
+				//
+				GKLocalPlayer.LocalPlayer.AuthenticateHandler = (ui, error) => {
+
+					// If ui is null, that means the user is already authenticated,
+					// for example, if the user used Game Center directly to log in
+
+					if (ui != null)
+						;//current.PresentModalViewController (ui, true);
+					else
+					{
+						// Check if you are authenticated:
+						var authenticated = GKLocalPlayer.LocalPlayer.Authenticated;
+					}
+					Console.Out.WriteLine("something");
+				};
+			}
+			else
+			{
+				// Versions prior to iOS 6.0
+				GKLocalPlayer.LocalPlayer.Authenticate ((err) => {
+					Console.Out.WriteLine("something2");
+				});
+			}
+			return true;
+		}
+
 		public static bool isGameCenterAvailable()
 		{
-			return UIDevice.CurrentDevice.CheckSystemVersion (4, 1);
+			return UIDevice.CurrentDevice.CheckSystemVersion (6, 0);
 		}
 
 		public GKLeaderboard reloadLeaderboard(string category)
@@ -29,7 +69,7 @@ namespace Hooked
 
 		}
 
-		public void reportScore(long score, string category, MTGKTapperViewController controller)
+		public void reportScore(long score, string category)
 		{
 			GKScore scoreReporter = new GKScore (category);
 			scoreReporter.Value = score;
@@ -41,7 +81,7 @@ namespace Hooked
 					new UIAlertView ("Score Reported Failed", "Score Reported Failed", null, "OK", null).Show ();
 				}
 				NSThread.SleepFor(1);
-				controller.updateHighScore();
+				//controller.updateHighScore();
 			}));
 		}
 	}

@@ -16,6 +16,7 @@ using System.Linq;
 using MonoTouch.UIKit;
 using MonoTouch.Foundation;
 using MonoTouch.iAd;
+using MonoTouch.GameKit;
 
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
@@ -47,6 +48,7 @@ namespace Hooked
 		#region Fields
 
 		public static GameState State{ get; set; }
+
 		GraphicsDeviceManager graphics;
 		SpriteBatch spriteBatch;
 
@@ -100,7 +102,6 @@ namespace Hooked
 
 		public Game1 ()
 		{
-
 			graphics = new GraphicsDeviceManager(this) {
 				#if __OUYA__
 				SupportedOrientations = DisplayOrientation.LandscapeLeft | DisplayOrientation.LanscapeRight,
@@ -120,6 +121,7 @@ namespace Hooked
 		protected override void Initialize ()
 		{
 			State = GameState.Menu;
+
 			hookHeight = Math.Min (GraphicsDevice.Viewport.Height, MaxHookheight);
 			player = new Player ();
 			floor = new Floor ();
