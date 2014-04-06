@@ -344,14 +344,18 @@ namespace Hooked
 					if (score == 0) {
 						adView.Hidden = true;
 					} else if (score % 5 == 0) {
-						adView.Hidden = false;
+						if (adView.BannerLoaded) {
+							adView.Hidden = false;
+						}
 					} else if (score % 3 == 0) {
 						adView.Hidden = true;
 					}
 
 				} else if (State == GameState.Score) {
 					UpdateGameOver (gameTime);
-					adView.Hidden = false;
+					if (adView.BannerLoaded) {
+						adView.Hidden = false;
+					}
 					if (gameOverAnimationDuration <= gameOverTimer && Toggled ()) {
 						Reset ();
 					}
