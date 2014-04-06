@@ -3,27 +3,63 @@
 using MonoTouch.Foundation;
 using MonoTouch.UIKit;
 using MonoTouch.GameKit;
+using Microsoft.Xna.Framework.GamerServices;
 
 namespace Hooked
 {
 	public class GameCenterManager
 	{
-		private static GameCenterManager instance = null;
+		private string leaderboardID;
+		private SignedInGamer gamer;
+		private long score;
 
-		public GameCenterManager ()
+		public GameCenterManager(string leaderboardID, long score)
 		{
+			this.leaderboardID = leaderboardID;
+			gamer = GetSignedInGamer ();
+			this.score = score;
 		}
 
-		public static GameCenterManager getInstance()
+		public bool IsSignedIntoGameCenter()
 		{
-			if (instance == null) {
-				instance = new GameCenterManager ();
+			if ((Gamer.SignedInGamers.Count > 0) && (Gamer.SignedInGamers [0].IsSignedInToLive)) {
+				return true;
 			}
-			return instance;
+			return false;
 		}
 
-		public static bool SetAuthenticatingUser()
+		private SignedInGamer GetSignedInGamer()
 		{
+			if (IsSignedIntoGameCenter ()) {
+				return Gamer.SignedInGamers [0];
+			}
+			return null;
+		}
+
+		public void SaveScoreToIosGameCenter()
+		{
+			if (IsSignedIntoGameCenter ()) {
+				if (gamer != null) {
+					gamer.UpdateScore (leaderboardID, score);
+				}
+			}
+		}
+
+		public GKLeaderboard GetLeaderboard()
+		{
+			GKLeaderboard leaderboard = new GKLeaderboard ();
+			leaderboard.Category = GamePhysics.LeaderboardID;
+			return leaderboard;
+		}
+
+		public bool Authenticate ()
+		{
+			//
+			// This shows how to authenticate on both iOS 6.0 and older versions
+			//
+
+
+
 			if (UIDevice.CurrentDevice.CheckSystemVersion (6, 0))
 			{
 				//
@@ -52,37 +88,6 @@ namespace Hooked
 				});
 			}
 			return true;
-		}
-
-		public static bool isGameCenterAvailable()
-		{
-			return UIDevice.CurrentDevice.CheckSystemVersion (6, 0);
-		}
-
-		public GKLeaderboard reloadLeaderboard(string category)
-		{
-			GKLeaderboard leaderboard = new GKLeaderboard ();
-			leaderboard.Category = category;
-			leaderboard.TimeScope = GKLeaderboardTimeScope.AllTime;
-			leaderboard.Range = new NSRange (1, 1);
-			return leaderboard;
-
-		}
-
-		public void reportScore(long score, string category)
-		{
-			GKScore scoreReporter = new GKScore (category);
-			scoreReporter.Value = score;
-			scoreReporter.ReportScore (new GKNotificationHandler ((error) => {
-				if(error == null){
-					new UIAlertView ("Score reported", "Score Reported successfully", null, "OK", null).Show ();
-				}
-				else{
-					new UIAlertView ("Score Reported Failed", "Score Reported Failed", null, "OK", null).Show ();
-				}
-				NSThread.SleepFor(1);
-				//controller.updateHighScore();
-			}));
 		}
 	}
 }

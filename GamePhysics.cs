@@ -9,6 +9,9 @@ namespace Hooked
 	{
 		public static bool IsLargeScreen = false;
 
+		// game center
+		public const string LeaderboardID = "fishbait_leaderboard";
+
 		// device constants
 		public const int LargeScreenHeight = 1200;
 		public const int LargeScreenFishHeight = 100;
