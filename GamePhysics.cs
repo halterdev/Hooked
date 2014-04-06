@@ -17,6 +17,22 @@ namespace Hooked
 		public const int LargeScreenFishHeight = 100;
 		public const int FishHeight = 50;
 
+		public const float ScaleScore = 3.0f;
+		public const float ScaleScoreLarge = 6.0f;
+
+		public const float EndGameFontScale = 1.8f;
+		public const float LargeScreenEndGameFontScale = 2.5f;
+		public const float ScoreScale = 3.0f;
+		public const float LargeScreenScoreScale = 6.0f;
+
+		public const int EndGameScoreStringY = 100;
+		public const int LargeEndGameScoreStringY = 140;
+		public const int EndGameCurrentScoreY = 70;
+		public const int LargeEndGameCurrentScoreY = 105;
+		public const int EndGameHighScoreStringY = 30;
+		public const int LargeEndGameHighScoreStringY = 45;
+
+
 		public const double PlayerJumpLength = 500;
 		public const double PlayerJumpHeight = -10;
 		public const double PlayerFallSpeed = .6;
@@ -35,7 +51,7 @@ namespace Hooked
 		public const double HookSpawnIncrease = 500;
 
 		public const float EnergyGainedFromWorm = .12f;
-		public const float EnergyLoss = .0004f;
+		public const float EnergyLoss = .0005f;
 
 		// how fast things move to left
 		public const float HookSpeed = 2.5f;
