@@ -32,6 +32,11 @@ namespace Hooked
 		public const double StartHookSpawnRate = 3500;
 		public const double StartWormSpawnRate = 5000;
 
+		public const double HookSpawnIncrease = 500;
+
+		public const float EnergyGainedFromWorm = .12f;
+		public const float EnergyLoss = .0004f;
+
 		// how fast things move to left
 		public const float HookSpeed = 2.5f;
 		public const float HookSpeedLargeScreen = 3.5f;
@@ -54,7 +59,7 @@ namespace Hooked
 		public const string HighScoreString = "High Score";
 
 		// score formatting
-		public const int SingleDegitScoreOffset = 21;
+		public const int SingleDegitScoreOffset = 12;
 		public const int DoubleDegitScoreOffset = 20;
 
 		// ad stuff

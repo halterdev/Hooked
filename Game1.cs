@@ -389,8 +389,6 @@ namespace Hooked
 		/// <param name="gameTime">Provides a snapshot of timing values.</param>
 		protected override void Draw (GameTime gameTime)
 		{
-			Vector2 textCenter = new Vector2 (GraphicsDevice.Viewport.Width / 2, 50f);
-
 			// Clear the backbuffer
 			graphics.GraphicsDevice.Clear (Color.Blue);
 
@@ -465,22 +463,23 @@ namespace Hooked
 					new Vector2(0,0), 1.8f, SpriteEffects.None, 0);
 
 				int currentScoreOffset, highScoreOffset;
-				currentScoreOffset = highScoreOffset = GamePhysics.SingleDegitScoreOffset;
+				currentScoreOffset = GamePhysics.SingleDegitScoreOffset;
+				highScoreOffset = GamePhysics.SingleDegitScoreOffset;
 				if (score.ToString ().Length > 1) {
 					currentScoreOffset = GamePhysics.DoubleDegitScoreOffset;
 				}
 				if (HighScore.Current.ToString ().Length > 1) {
-					currentScoreOffset = GamePhysics.DoubleDegitScoreOffset;
+					highScoreOffset = GamePhysics.DoubleDegitScoreOffset;
 				}
 
 				spriteBatch.DrawString (font, score.ToString (),
-					new Vector2 ((this.Window.ClientBounds.Width / 2 - currentScoreOffset), (this.Window.ClientBounds.Height / 2) - 70), Color.White, 0,
+					new Vector2 ((this.Window.ClientBounds.Width / 2) - currentScoreOffset, (this.Window.ClientBounds.Height / 2) - 70), Color.White, 0,
 					new Vector2 (0, 0), 1.8f, SpriteEffects.None, 0);
 				spriteBatch.DrawString (font, GamePhysics.HighScoreString,
 					new Vector2 ((this.Window.ClientBounds.Width / 2 - (GamePhysics.HighScoreString.Length + 80)), (this.Window.ClientBounds.Height / 2) - 30), Color.White, 0,
 					new Vector2 (0, 0), 1.8f, SpriteEffects.None, 0);
 				spriteBatch.DrawString (font, HighScore.Current.ToString (),
-					new Vector2 ((this.Window.ClientBounds.Width / 2 - highScoreOffset), (this.Window.ClientBounds.Height / 2)), Color.White, 0,
+					new Vector2 ((this.Window.ClientBounds.Width / 2) - highScoreOffset, (this.Window.ClientBounds.Height / 2)), Color.White, 0,
 					new Vector2 (0, 0), 1.8f, SpriteEffects.None, 0);
 			}
 
@@ -635,22 +634,22 @@ namespace Hooked
 					wormEaten = true;
 
 					if (hookSpanTime <= 1000) {
-						if (hookSpanTime > 500) {
+						if (hookSpanTime > GamePhysics.HookSpawnIncrease) {
 							hookSpanTime -= 40;
 						}
 					} else {
-						hookSpanTime -= 500;
+						hookSpanTime -= GamePhysics.HookSpawnIncrease;
 					}
 				}
 			}
 
 			if (wormEaten) {
-				energy = energy + .12f;
+				energy = energy + GamePhysics.EnergyGainedFromWorm;
 				if (energy > 1.0f) {
 					energy = 1.0f;
 				}
 			} else {
-				energy = energy - .0004f;
+				energy = energy - GamePhysics.EnergyLoss;
 			}
 
 			if (energy <= 0) {
