@@ -22,6 +22,7 @@ namespace Hooked
 
 		public const float EndGameFontScale = 1.8f;
 		public const float LargeScreenEndGameFontScale = 2.5f;
+
 		public const float ScoreScale = 3.0f;
 		public const float LargeScreenScoreScale = 6.0f;
 
@@ -32,6 +33,10 @@ namespace Hooked
 		public const int EndGameHighScoreStringY = 30;
 		public const int LargeEndGameHighScoreStringY = 45;
 
+		public const float TapToSwimStringScale = 1.8f;
+		public const float LargeTapToSwimStringScale = 3.0f;
+		public const float EatWormsStringScale = 2.0f;
+		public const float LargeEatWormsStringscale = 4.0f; 
 
 		public const double PlayerJumpLength = 500;
 		public const double PlayerJumpHeight = -10;

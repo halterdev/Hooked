@@ -403,33 +403,18 @@ namespace Hooked
 			worms.ForEach (x => x.Draw (spriteBatch));
 			//corals.ForEach (x => x.Draw (spriteBatch));
 
-			Color energyColor = Color.LightGreen;
-			if (energy < .25f) {
-				energyColor = Color.Red;
-				Color[] colorData = new Color[energyTexture.Width * energyTexture.Height];
-
-				for (int i = 0; i < energyTexture.Width * energyTexture.Height; i++) {
-					colorData [i] = Color.Red;
-				}
-				insideEnergyTexture.SetData<Color> (colorData);
-			} else {
-				energyColor = Color.Green;
-				Color[] colorData = new Color[energyTexture.Width * energyTexture.Height];
-
-				for (int i = 0; i < energyTexture.Width * energyTexture.Height; i++) {
-					colorData [i] = Color.GreenYellow;
-				}
-				insideEnergyTexture.SetData<Color> (colorData);
-			}
-				
-			spriteBatch.Draw (insideEnergyTexture, new Vector2 (GraphicsDevice.Viewport.Width / 2 - ((energyTexture.Width / 2) * energy), GamePhysics.TopOffset - 10), null, 
-				energyColor, 0, new Vector2 (0, 0), energy, SpriteEffects.None, 0);
-
 			if (State == GameState.Menu) {
 				// draw tap to swim memo before start
+				Vector2 tapToSwimStringLength = font.MeasureString (GamePhysics.TapToSwimString);
+				float tapToSwimScale;
+				if (GamePhysics.IsLargeScreen) {
+					tapToSwimScale = GamePhysics.LargeTapToSwimStringScale;
+				} else {
+					tapToSwimScale = GamePhysics.TapToSwimStringScale;
+				}
 				spriteBatch.DrawString (font, GamePhysics.TapToSwimString,
-					new Vector2 ((this.Window.ClientBounds.Width / 2) - GamePhysics.TapToSwimString.Length * 10, GamePhysics.TopOffset + 20), Color.White, 0,
-					new Vector2 (0, 0), 1.8f, SpriteEffects.None, 0);
+					new Vector2 ((this.Window.ClientBounds.Width / 2) - ((tapToSwimStringLength.X / 2) * tapToSwimScale), GamePhysics.TopOffset + 20), Color.Black, 0,
+					new Vector2 (0, 0), tapToSwimScale, SpriteEffects.None, 0);
 			}
 
 			if (State == GameState.Playing) {
@@ -447,19 +432,47 @@ namespace Hooked
 					new Vector2 (0, 0), scoreScale, SpriteEffects.None, 0);
 
 				// if beginning, show eat worm string
+				float eatWormsScale;
+				if (GamePhysics.IsLargeScreen) {
+					eatWormsScale = GamePhysics.LargeEatWormsStringscale;
+				} else {
+					eatWormsScale = GamePhysics.EatWormsStringScale;
+				}
+				Vector2 eatWormStringSize = font.MeasureString (GamePhysics.EatWormsString);
 				if (!(worms.Count > 0 || hooks.Count > 0)) {
 					spriteBatch.DrawString (font, GamePhysics.EatWormsString,
-						new Vector2 (this.Window.ClientBounds.Width / 2 - (GamePhysics.EatWormsString.Length*10), this.Window.ClientBounds.Height / 2),
-						Color.Red, 0, new Vector2 (0, 0), 2.0f, SpriteEffects.None, 0);
+						new Vector2 (this.Window.ClientBounds.Width / 2 - ((eatWormStringSize.X / 2) * eatWormsScale), this.Window.ClientBounds.Height / 2),
+						Color.Red, 0, new Vector2 (0, 0), eatWormsScale, SpriteEffects.None, 0);
 				}
+
+				// handle the energy bar
+				Color energyColor = Color.LightGreen;
+				if (energy < .25f) {
+					energyColor = Color.Red;
+					Color[] colorData = new Color[energyTexture.Width * energyTexture.Height];
+
+					for (int i = 0; i < energyTexture.Width * energyTexture.Height; i++) {
+						colorData [i] = Color.Red;
+					}
+					insideEnergyTexture.SetData<Color> (colorData);
+				} else {
+					energyColor = Color.Green;
+					Color[] colorData = new Color[energyTexture.Width * energyTexture.Height];
+
+					for (int i = 0; i < energyTexture.Width * energyTexture.Height; i++) {
+						colorData [i] = Color.GreenYellow;
+					}
+					insideEnergyTexture.SetData<Color> (colorData);
+				}
+
+				spriteBatch.Draw (insideEnergyTexture, new Vector2 (GraphicsDevice.Viewport.Width / 2 - ((energyTexture.Width / 2) * energy), GamePhysics.TopOffset - 10), null, 
+					energyColor, 0, new Vector2 (0, 0), energy, SpriteEffects.None, 0);
 			}
 				
 			if (State == GameState.Score) {
 				// energy warning if died from energy
 				if (deadFromEnergy) {
-//					spriteBatch.DrawString(font, GamePhysics.EnergyDeathString, 
-//						new Vector2((this.Window.ClientBounds.Width / 2 - (GamePhysics.EnergyDeathString.Length*6)), GamePhysics.TopOffset), Color.Red, 0,
-//						new Vector2(0,0), 2f, SpriteEffects.None, 0);
+
 				}
 
 				// show current score and high score
@@ -481,29 +494,20 @@ namespace Hooked
 
 				Vector2 scoreStringVector = font.MeasureString (GamePhysics.ScoreString);
 				Vector2 highScoreStringVector = font.MeasureString (GamePhysics.HighScoreString);
+				Vector2 scoreVector = font.MeasureString (score.ToString ());
+				Vector2 highscoreVector = font.MeasureString (HighScore.Current.ToString ());
 
 				spriteBatch.DrawString(font, GamePhysics.ScoreString, 
 					new Vector2((this.Window.ClientBounds.Width / 2 - ((scoreStringVector.X / 2) * scoreFontScale)), (this.Window.ClientBounds.Height / 2) - scoreStringY), Color.White, 0,
 					new Vector2(0,0), scoreFontScale, SpriteEffects.None, 0);
-
-				int currentScoreOffset, highScoreOffset;
-				currentScoreOffset = GamePhysics.SingleDegitScoreOffset;
-				highScoreOffset = GamePhysics.SingleDegitScoreOffset;
-				if (score.ToString ().Length > 1) {
-					currentScoreOffset = GamePhysics.DoubleDegitScoreOffset;
-				}
-				if (HighScore.Current.ToString ().Length > 1) {
-					highScoreOffset = GamePhysics.DoubleDegitScoreOffset;
-				}
-
 				spriteBatch.DrawString (font, score.ToString (),
-					new Vector2 ((this.Window.ClientBounds.Width / 2) - currentScoreOffset, (this.Window.ClientBounds.Height / 2) - scoreY), Color.White, 0,
+					new Vector2 ((this.Window.ClientBounds.Width / 2) - ((scoreVector.X / 2) * scoreFontScale), (this.Window.ClientBounds.Height / 2) - scoreY), Color.White, 0,
 					new Vector2 (0, 0), scoreFontScale, SpriteEffects.None, 0);
 				spriteBatch.DrawString (font, GamePhysics.HighScoreString,
 					new Vector2 ((this.Window.ClientBounds.Width / 2 - ((highScoreStringVector.X / 2) * scoreFontScale)), (this.Window.ClientBounds.Height / 2) - highScoreStringY), Color.White, 0,
 					new Vector2 (0, 0), scoreFontScale, SpriteEffects.None, 0);
 				spriteBatch.DrawString (font, HighScore.Current.ToString (),
-					new Vector2 ((this.Window.ClientBounds.Width / 2) - highScoreOffset, (this.Window.ClientBounds.Height / 2)), Color.White, 0,
+					new Vector2 ((this.Window.ClientBounds.Width / 2) - ((highscoreVector.X / 2) * scoreFontScale), (this.Window.ClientBounds.Height / 2)), Color.White, 0,
 					new Vector2 (0, 0), scoreFontScale, SpriteEffects.None, 0);
 			}
 
@@ -702,7 +706,9 @@ namespace Hooked
 			gameOverTimer = 0;
 			player.Health = 0;
 			player.Active = false;
-			adView.Hidden = false;
+			if (adView.BannerLoaded) {
+				adView.Hidden = false;
+			}
 			State = GameState.Score;
 			HighScore.Current = score;
 		}
