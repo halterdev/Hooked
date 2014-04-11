@@ -59,8 +59,10 @@ namespace Hooked
 		public const float EnergyLoss = .0005f;
 
 		// how fast things move to left
-		public const float HookSpeed = 2.5f;
-		public const float HookSpeedLargeScreen = 3.5f;
+		public static float HookSpeed = 2.5f;
+		public static float HookSpeedLargeScreen = 3.5f;
+		public const int WhenToUpdateHookSpeed = 8;
+
 		public const float WormSpeed = 2.5f;
 		public const float WormSpeedLargeScreen = 3.5f;
 		public const float CoralSpeed = 1.5f;

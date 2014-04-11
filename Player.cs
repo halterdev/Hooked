@@ -58,7 +58,7 @@ namespace Hooked
 		public Rectangle Rectangle
 		{
 			//get{return new Rectangle((int)Position.X, (int)Position.Y, (int)(Width * .65), (int)(Height * .9));}
-			get { return new Rectangle ((int)Position.X, (int)Position.Y, Width, Height); }
+			get { return new Rectangle ((int)Position.X + (Width / 2), (int)Position.Y, Width / 2, Height); }
 		}
 
 		double jumpTimer = GamePhysics.PlayerJumpLength;

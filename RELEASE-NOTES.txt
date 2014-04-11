@@ -1,1 +1,5 @@
-Version 1.0.. no GameCenter, maybe in an update...... one day......
+Version 1.1 --
+
+Better hit detection w/ hooks
+Hook speed now increasing every 8 points
+Hooks spawn possibility higher on screen

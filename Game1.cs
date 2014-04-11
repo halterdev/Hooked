@@ -89,6 +89,8 @@ namespace Hooked
 
 		// players score
 		int score;
+		int untilSpeedUpdate;
+
 		float energy;
 		int hookHeight;
 
@@ -128,6 +130,7 @@ namespace Hooked
 
 			playSound = true;
 			hasPlayedSound = false;
+			untilSpeedUpdate = GamePhysics.WhenToUpdateHookSpeed;
 
 			previousTouches = new TouchCollection ();
 			currentTouches = new TouchCollection ();
@@ -244,6 +247,8 @@ namespace Hooked
 			deadFromEnergy = false;
 			deadFromFloor = false;
 			deadFromFloorDrawn = false;
+
+			untilSpeedUpdate = GamePhysics.WhenToUpdateHookSpeed;
 
 			hasPlayedSound = false;
 			playSound = true;
@@ -536,7 +541,7 @@ namespace Hooked
 		private void AddHook()
 		{
 			var yPos = random.Next (GamePhysics.TopOffset + 10, GraphicsDevice.Viewport.Height - hookTexture.Height);
-			var xPos = (GraphicsDevice.Viewport.Width + hookTexture.Width);
+			var xPos = (GraphicsDevice.Viewport.Width + (hookTexture.Width / 2));
 			var posRect = new Rectangle (xPos, yPos, hookTexture.Width, hookTexture.Height);
 
 			var hook = new Hook ();
@@ -658,7 +663,15 @@ namespace Hooked
 				if (worm.Collides (rectangle1)) {
 					belchSound.Play ();
 					eatenWorms.Add (worm);
+
 					score++;
+					untilSpeedUpdate--;
+					if (untilSpeedUpdate == 0)
+					{
+						GamePhysics.HookSpeed += .2f;
+						untilSpeedUpdate = GamePhysics.WhenToUpdateHookSpeed;
+					}
+
 					wormEaten = true;
 
 					if (hookSpanTime <= 1000) {
