@@ -97,6 +97,7 @@ namespace Hooked
 		bool deadFromHook, deadFromEnergy, deadFromFloor, flippedForEnergyDeath;
 		bool deadFromFloorDrawn;
 
+		ADBannerView topAdView;
 		ADBannerView adView;
 		#endregion
 
@@ -135,6 +136,37 @@ namespace Hooked
 			previousTouches = new TouchCollection ();
 			currentTouches = new TouchCollection ();
 
+			// top ad view
+			topAdView = new ADBannerView ();
+			NSMutableSet topNsm = new NSMutableSet ();
+			topNsm.Add (ADBannerView.SizeIdentifierPortrait);
+			topAdView.RequiredContentSizeIdentifiers = topNsm;
+			topAdView.Hidden = true;
+
+			// delegate for ad is loaded
+			topAdView.AdLoaded += delegate {
+				topAdView.Frame = new System.Drawing.RectangleF(0, 0, topAdView.Frame.Width, topAdView.Frame.Height);
+			};
+
+			// delegate for failed ad receive
+			topAdView.FailedToReceiveAd += delegate(object sender, AdErrorEventArgs e) {
+				Console.WriteLine(e.Error);
+				topAdView.Hidden = true;
+			};
+
+			// delegate for click on ad
+			topAdView.ActionShouldBegin = delegate(ADBannerView banner, bool willLeaveApp) {
+				// pause game here
+				State = GameState.Paused;
+				return true;
+			};
+
+			// delegate for ad interaction finished
+			topAdView.ActionFinished += delegate {
+				// continue game now
+				State = GameState.Menu;
+			};
+
 			// ad stuff
 			UIViewController view = this.Services.GetService (typeof(UIViewController)) as UIViewController;
 			adView = new ADBannerView ();
@@ -169,6 +201,7 @@ namespace Hooked
 				State = GameState.Menu;
 			};
 
+			view.Add (topAdView);
 			view.Add (adView);
 			base.Initialize ();
 		}
@@ -240,6 +273,7 @@ namespace Hooked
 			minimumCoralSpanTime = GamePhysics.MinimumCoralSpawnRate;
 			maxCoralSpanTime = GamePhysics.MaximumCoralSpawnRate;
 
+			topAdView.Hidden = true;
 			adView.Hidden = true;
 
 			flippedForEnergyDeath = false;
@@ -299,6 +333,7 @@ namespace Hooked
 				// update player
 				var shouldSwim = currentTouches.Any () || currentKeyboardState.IsKeyDown (Keys.Space) || currentGamePadState.IsButtonDown (Buttons.A);
 				if (shouldSwim && State == GameState.Menu) {
+					topAdView.Hidden = true;
 					adView.Hidden = true;
 					State = GameState.Playing;
 				} else if (shouldSwim && State == GameState.Score) {
@@ -358,6 +393,10 @@ namespace Hooked
 
 				} else if (State == GameState.Score) {
 					UpdateGameOver (gameTime);
+					if (topAdView.BannerLoaded)
+					{
+						topAdView.Hidden = false;
+					}
 					if (adView.BannerLoaded) {
 						adView.Hidden = false;
 					}
@@ -719,8 +758,17 @@ namespace Hooked
 			gameOverTimer = 0;
 			player.Health = 0;
 			player.Active = false;
-			if (adView.BannerLoaded) {
+
+			if (adView.BannerLoaded)
+			{
 				adView.Hidden = false;
+			} else
+			{
+				// if bottom ad didnt' load, try top ad
+				if (topAdView.BannerLoaded)
+				{
+					topAdView.Hidden = false;
+				}
 			}
 			State = GameState.Score;
 			HighScore.Current = score;
