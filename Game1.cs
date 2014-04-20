@@ -283,6 +283,8 @@ namespace Hooked
 			deadFromFloorDrawn = false;
 
 			untilSpeedUpdate = GamePhysics.WhenToUpdateHookSpeed;
+			GamePhysics.HookSpeed = GamePhysics.StartHookSpeed;
+			GamePhysics.HookSpeedLargeScreen = GamePhysics.LargeStartHookSpeed;
 
 			hasPlayedSound = false;
 			playSound = true;
