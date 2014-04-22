@@ -83,6 +83,7 @@ namespace Hooked
 		public const string EnergyDeathStringTwo = "Eat More Worms!";
 		public const string ScoreString = "Score";
 		public const string HighScoreString = "High Score";
+		public const string SendHighScoreString = "@FishBaitApp";
 
 		// score formatting
 		public const int SingleDegitScoreOffset = 12;

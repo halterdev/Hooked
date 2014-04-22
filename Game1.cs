@@ -72,7 +72,7 @@ namespace Hooked
 		SpriteFont font;
 		Texture2D playerTexture, hookTexture, wormTexture, coralTexture;
 		Texture2D insideEnergyTexture, energyTexture;
-		Texture2D backgroundTexture, sandTexture;
+		Texture2D backgroundTexture, sandTexture, blackSquareTexture;
 
 		SoundEffect belchSound, bubbleSound, reelSound, energyDeathSound;
 		bool playSound, hasPlayedSound;
@@ -136,37 +136,6 @@ namespace Hooked
 			previousTouches = new TouchCollection ();
 			currentTouches = new TouchCollection ();
 
-			// top ad view
-			topAdView = new ADBannerView ();
-			NSMutableSet topNsm = new NSMutableSet ();
-			topNsm.Add (ADBannerView.SizeIdentifierPortrait);
-			topAdView.RequiredContentSizeIdentifiers = topNsm;
-			topAdView.Hidden = true;
-
-			// delegate for ad is loaded
-			topAdView.AdLoaded += delegate {
-				topAdView.Frame = new System.Drawing.RectangleF(0, 0, topAdView.Frame.Width, topAdView.Frame.Height);
-			};
-
-			// delegate for failed ad receive
-			topAdView.FailedToReceiveAd += delegate(object sender, AdErrorEventArgs e) {
-				Console.WriteLine(e.Error);
-				topAdView.Hidden = true;
-			};
-
-			// delegate for click on ad
-			topAdView.ActionShouldBegin = delegate(ADBannerView banner, bool willLeaveApp) {
-				// pause game here
-				State = GameState.Paused;
-				return true;
-			};
-
-			// delegate for ad interaction finished
-			topAdView.ActionFinished += delegate {
-				// continue game now
-				State = GameState.Menu;
-			};
-
 			// ad stuff
 			UIViewController view = this.Services.GetService (typeof(UIViewController)) as UIViewController;
 			adView = new ADBannerView ();
@@ -174,12 +143,12 @@ namespace Hooked
 			NSMutableSet nsM = new NSMutableSet ();
 			nsM.Add (ADBannerView.SizeIdentifierPortrait);
 			adView.RequiredContentSizeIdentifiers = nsM;
-			adView.Hidden = true;
 
 			// delegate for ad is loaded
 			adView.AdLoaded += delegate {
 				adView.Frame = new System.Drawing.RectangleF(0, (UIScreen.MainScreen.Bounds.Height - adView.Frame.Height), 
 					adView.Frame.Width, adView.Frame.Height);
+				adView.Hidden = false;
 			};
 
 			// delegate for failed ad receive
@@ -201,7 +170,6 @@ namespace Hooked
 				State = GameState.Menu;
 			};
 
-			view.Add (topAdView);
 			view.Add (adView);
 			base.Initialize ();
 		}
@@ -232,17 +200,21 @@ namespace Hooked
 			}
 			player.Initialize (playerTexture, new Vector2 (graphics.GraphicsDevice.Viewport.Width / 5, graphics.GraphicsDevice.Viewport.Height / 2));
 
-			sandTexture = Content.Load<Texture2D> ("Sand");
-			floor.Initialize (sandTexture, new Rectangle(0, graphics.GraphicsDevice.Viewport.Height - sandTexture.Height, sandTexture.Width, sandTexture.Height));
+			sandTexture = Content.Load<Texture2D> ("Sand2");
+//			floor.Initialize (sandTexture, new Rectangle(0, graphics.GraphicsDevice.Viewport.Bounds.Height - (int)((sandTexture.Height*2) + adView.Frame.Height), 
+//				sandTexture.Width, sandTexture.Height));
+			floor.Initialize (sandTexture, new Rectangle (0, graphics.GraphicsDevice.Viewport.Height - (int)(adView.Frame.Height * 3),
+				graphics.GraphicsDevice.Viewport.Width, (int)adView.Frame.Height * 3));
 
 			energyTexture = Content.Load<Texture2D> ("HealthBar-1");
+			blackSquareTexture = Content.Load<Texture2D> ("blacksquare");
 
 			if (graphics.GraphicsDevice.Viewport.Height > GamePhysics.LargeScreenHeight) {
 				backgroundTexture = Content.Load<Texture2D> ("waterbackgroundbig");
 			} else {
 				backgroundTexture = Content.Load<Texture2D> ("waterbackground");
 			}
-			hookHeight = graphics.GraphicsDevice.Viewport.Height - sandTexture.Height;
+			hookHeight = graphics.GraphicsDevice.Viewport.Height - (int)(adView.Frame.Height *3);
 
 			coralTexture = Content.Load<Texture2D> ("pinkcoral25x25");
 
@@ -272,9 +244,6 @@ namespace Hooked
 
 			minimumCoralSpanTime = GamePhysics.MinimumCoralSpawnRate;
 			maxCoralSpanTime = GamePhysics.MaximumCoralSpawnRate;
-
-			topAdView.Hidden = true;
-			adView.Hidden = true;
 
 			flippedForEnergyDeath = false;
 			deadFromHook = false;
@@ -321,6 +290,14 @@ namespace Hooked
 		{
 			base.Update (gameTime);
 
+			if (adView.BannerLoaded)
+			{
+				adView.Hidden = false;
+			} else
+			{
+				adView.Hidden = true;
+			}
+
 			if (!(State == GameState.Paused)) {
 				// save previous state of keyboard and gamepad to determine key/button presses
 				previousGamePadState = currentGamePadState;
@@ -335,8 +312,6 @@ namespace Hooked
 				// update player
 				var shouldSwim = currentTouches.Any () || currentKeyboardState.IsKeyDown (Keys.Space) || currentGamePadState.IsButtonDown (Buttons.A);
 				if (shouldSwim && State == GameState.Menu) {
-					topAdView.Hidden = true;
-					adView.Hidden = true;
 					State = GameState.Playing;
 				} else if (shouldSwim && State == GameState.Score) {
 					shouldSwim = false;
@@ -355,7 +330,7 @@ namespace Hooked
 				} else if (deadFromFloor) {
 					player.Update (true);
 				} else {
-					player.Update (gameTime, shouldSwim, graphics.GraphicsDevice.Viewport.Height - sandTexture.Height, State == GameState.Menu);
+					player.Update (gameTime, shouldSwim, graphics.GraphicsDevice.Viewport.Height - (int)(adView.Frame.Height *3), State == GameState.Menu);
 				}
 				
 				if (State != GameState.Score) {
@@ -382,26 +357,8 @@ namespace Hooked
 						bubbleSound.Dispose ();
 					}
 
-					// show ad on intervals of 5, for 3 worms
-					if (score == 0) {
-						adView.Hidden = true;
-					} else if (score % 5 == 0) {
-						if (adView.BannerLoaded) {
-							adView.Hidden = false;
-						}
-					} else if (score % 3 == 0) {
-						adView.Hidden = true;
-					}
-
 				} else if (State == GameState.Score) {
 					UpdateGameOver (gameTime);
-					if (topAdView.BannerLoaded)
-					{
-						topAdView.Hidden = false;
-					}
-					if (adView.BannerLoaded) {
-						adView.Hidden = false;
-					}
 					if (gameOverAnimationDuration <= gameOverTimer && Toggled ()) {
 						Reset ();
 					}
@@ -447,7 +404,6 @@ namespace Hooked
 
 			hooks.ForEach (x => x.Draw (spriteBatch));
 			worms.ForEach (x => x.Draw (spriteBatch));
-			//corals.ForEach (x => x.Draw (spriteBatch));
 
 			if (State == GameState.Menu) {
 				// draw tap to swim memo before start
@@ -563,7 +519,7 @@ namespace Hooked
 			} else if (deadFromFloor) {
 				if (!deadFromFloorDrawn) {
 					deadFromFloorDrawn = true;
-					player.Draw (spriteBatch, GraphicsDevice.Viewport.Height - (adView.Frame.Height + player.Height));
+					player.Draw (spriteBatch, GraphicsDevice.Viewport.Height - ((int)(adView.Frame.Height * 3) + player.Height));
 				} else {
 					player.Draw (spriteBatch, false);
 				}
@@ -581,7 +537,7 @@ namespace Hooked
 		const int MaxHookheight = 920;
 		private void AddHook()
 		{
-			var yPos = random.Next (GamePhysics.TopOffset + 10, GraphicsDevice.Viewport.Height - hookTexture.Height);
+			var yPos = random.Next (GamePhysics.TopOffset + 10, GraphicsDevice.Viewport.Height - ((int)(adView.Frame.Height *3) + hookTexture.Height));
 			var xPos = (GraphicsDevice.Viewport.Width + (hookTexture.Width / 2));
 			var posRect = new Rectangle (xPos, yPos, hookTexture.Width, hookTexture.Height);
 
@@ -593,7 +549,7 @@ namespace Hooked
 
 		private void AddWorm()
 		{
-			var yPos = random.Next (0, GraphicsDevice.Viewport.Height - wormTexture.Height);
+			var yPos = random.Next (0, GraphicsDevice.Viewport.Height - ((int)(adView.Frame.Height *3) + wormTexture.Height));
 			var xPos = ((GraphicsDevice.Viewport.Width + wormTexture.Width)) + 10;
 			var posRect = new Rectangle (xPos, yPos, wormTexture.Width, wormTexture.Height);
 
@@ -744,7 +700,7 @@ namespace Hooked
 				worms.Remove (worm);
 			}
 
-			if (rectangle1.Y == (graphics.GraphicsDevice.Viewport.Height - (rectangle1.Height + sandTexture.Height))) {
+			if (rectangle1.Y == (graphics.GraphicsDevice.Viewport.Height - (rectangle1.Height + (int)(adView.Frame.Height *3)))) {
 				deadFromFloor = true;
 				energyDeathSound.Play ();
 				gameOver ();
@@ -761,17 +717,6 @@ namespace Hooked
 			player.Health = 0;
 			player.Active = false;
 
-			if (adView.BannerLoaded)
-			{
-				adView.Hidden = false;
-			} else
-			{
-				// if bottom ad didnt' load, try top ad
-				if (topAdView.BannerLoaded)
-				{
-					topAdView.Hidden = false;
-				}
-			}
 			State = GameState.Score;
 			HighScore.Current = score;
 		}
